@@ -1,0 +1,2686 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math-Neuro Gym | پلتفرم تعاملی علوم اعصاب و ریاضی — امیرحسام فیروزفر</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Vazirmatn', 'Inter', 'sans-serif'],
+            mono: ['Inter', 'monospace']
+          },
+          colors: {
+            neuro: {
+              bg: '#070B19',
+              card: '#0F172A',
+              border: '#1E293B',
+              cyan: '#06B6D4',
+              violet: '#8B5CF6',
+              emerald: '#10B981',
+              amber: '#F59E0B',
+              rose: '#F43F5E'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Vazirmatn', 'Inter', sans-serif;
+      background-color: #070B19;
+      color: #F8FAFC;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.14) 0%, transparent 35%),
+        radial-gradient(circle at 85% 20%, rgba(6, 182, 212, 0.14) 0%, transparent 35%),
+        radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.09) 0%, transparent 40%);
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+    }
+    .glass-card-hover {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card-hover:hover {
+      transform: translateY(-3px);
+      border-color: rgba(6, 182, 212, 0.45);
+      box-shadow: 0 12px 30px -10px rgba(6, 182, 212, 0.22);
+    }
+    .neon-border-cyan {
+      box-shadow: 0 0 18px rgba(6, 182, 212, 0.25), inset 0 0 12px rgba(6, 182, 212, 0.08);
+    }
+    .neon-border-violet {
+      box-shadow: 0 0 18px rgba(139, 92, 246, 0.25), inset 0 0 12px rgba(139, 92, 246, 0.08);
+    }
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 50%, #FB7185 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .cyber-gradient-text {
+      background: linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #C084FC 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .ltr-num {
+      direction: ltr;
+      display: inline-block;
+      font-family: 'Inter', 'Vazirmatn', monospace;
+    }
+    .brain-region-path {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .brain-region-path:hover {
+      filter: drop-shadow(0 0 12px currentColor);
+      opacity: 0.95;
+    }
+    .matrix-cell {
+      transition: all 0.18s ease;
+    }
+    .matrix-cell:active {
+      transform: scale(0.93);
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.65; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.04); }
+    }
+    .animate-pulse-glow {
+      animation: pulseGlow 2.6s infinite ease-in-out;
+    }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff !important; color: #000 !important; }
+      .glass-card { background: #fff !important; border: 1px solid #cbd5e1 !important; color: #000 !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-cyan-500 selection:text-slate-950">
+
+  <!-- Background Neural Particle Canvas -->
+  <canvas id="bgNeuralCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-35"></canvas>
+
+  <!-- Top Festival & Creator Ribbon -->
+  <div class="relative z-20 bg-gradient-to-r from-indigo-950/90 via-slate-900/95 to-cyan-950/90 border-b border-cyan-500/25 px-3 py-2 text-xs sm:text-sm no-print">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30">
+          🏆 جشنواره خلاقیت‌های ریاضی — دهه ریاضیات
+        </span>
+        <span class="hidden md:inline text-slate-300 font-medium">
+          دبیرستان شهید بهشتی دوره اول
+        </span>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-1.5 bg-slate-800/80 border border-violet-500/30 px-3 py-1 rounded-full">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span class="text-slate-300">طراح و سازنده:</span>
+          <strong class="text-amber-300 font-extrabold tracking-wide">امیرحسام فیروزفر</strong>
+        </div>
+        <button id="btnOpenJudgeModal" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-400/30 font-semibold transition flex items-center gap-1">
+          <span>📋</span>
+          <span>معرفی به داوران</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Header & Telemetry Bar -->
+  <header class="sticky top-0 z-30 glass-card border-b border-slate-800/80 px-4 py-3 no-print">
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-3">
+      <!-- Brand Title -->
+      <div class="flex items-center justify-between w-full lg:w-auto">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-500 via-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-cyan-500/25 border border-white/15">
+            <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04Z"/>
+              <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.04Z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-lg sm:text-xl font-black tracking-tight text-white">
+                Math-Neuro <span class="cyber-gradient-text">Gym</span>
+              </h1>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-violet-500/20 text-violet-300 border border-violet-500/30">v2.5 PRO</span>
+            </div>
+            <p class="text-xs text-slate-400">آزمایشگاه تعاملی علوم اعصاب شناختی و ریاضیات پیشرفته</p>
+          </div>
+        </div>
+
+        <!-- Sound & Demo Controls (Mobile) -->
+        <div class="flex lg:hidden items-center gap-2">
+          <button id="btnAudioToggleMobile" class="p-2 rounded-xl bg-slate-800/90 border border-slate-700 text-cyan-400 hover:bg-slate-700 transition" title="صدا و امواج صوتی">
+            🔊
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Neuro-Telemetry Metrics -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full lg:w-auto">
+        <div class="bg-slate-900/90 border border-slate-800 rounded-xl px-3 py-1.5 flex items-center gap-2.5">
+          <span class="text-cyan-400 text-lg">⚡</span>
+          <div>
+            <div class="text-[10px] text-slate-400">شاخص نرو-ریاضی (NMI)</div>
+            <div class="text-sm font-black text-white ltr-num" id="statNeuroIQ">118</div>
+          </div>
+        </div>
+        <div class="bg-slate-900/90 border border-slate-800 rounded-xl px-3 py-1.5 flex items-center gap-2.5">
+          <span class="text-violet-400 text-lg">🧠</span>
+          <div>
+            <div class="text-[10px] text-slate-400">ظرفیت حافظه فعال</div>
+            <div class="text-sm font-black text-violet-300 ltr-num" id="statWMIndex">2.4 K</div>
+          </div>
+        </div>
+        <div class="bg-slate-900/90 border border-slate-800 rounded-xl px-3 py-1.5 flex items-center gap-2.5">
+          <span class="text-emerald-400 text-lg">⏱️</span>
+          <div>
+            <div class="text-[10px] text-slate-400">سرعت سیناپسی</div>
+            <div class="text-sm font-black text-emerald-300 ltr-num" id="statReactionMs">640 ms</div>
+          </div>
+        </div>
+        <div class="bg-slate-900/90 border border-slate-800 rounded-xl px-3 py-1.5 flex items-center gap-2.5">
+          <span class="text-amber-400 text-lg">✨</span>
+          <div>
+            <div class="text-[10px] text-slate-400">امتیاز سیناپسی (XP)</div>
+            <div class="text-sm font-black text-amber-300 ltr-num" id="statTotalXP">350</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Utility Buttons -->
+      <div class="hidden lg:flex items-center gap-2">
+        <button id="btnBinauralWave" class="px-3 py-2 rounded-xl bg-indigo-950/80 hover:bg-indigo-900/80 border border-indigo-500/30 text-xs font-semibold text-indigo-300 transition flex items-center gap-1.5" title="پخش موج گاما ۴۰ هرتز برای افزایش تمرکز">
+          <span id="binauralStatusDot" class="w-2 h-2 rounded-full bg-slate-500"></span>
+          <span>موج تمرکز 40Hz</span>
+        </button>
+        <button id="btnAudioToggle" class="px-3 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-cyan-300 transition flex items-center gap-1.5">
+          <span id="audioIcon">🔊</span>
+          <span id="audioLabel">افکت صوتی: فعال</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="max-w-7xl mx-auto mt-3 pt-2 border-t border-slate-800/70 flex items-center gap-1.5 overflow-x-auto pb-1">
+      <button data-tab="arena" class="nav-tab-btn active-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition flex items-center gap-2 bg-gradient-to-r from-cyan-500/25 to-indigo-500/25 text-cyan-300 border border-cyan-400/40">
+        <span>🎮</span>
+        <span>۱. مینی‌گیم‌های نرو-ریاضی (۴ بازی)</span>
+      </button>
+      <button data-tab="atlas" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition flex items-center gap-2 text-slate-300 hover:bg-slate-800/70 border border-transparent">
+        <span>🧠</span>
+        <span>۲. اطلس تعاملی مغز و نوار مغزی (EEG)</span>
+      </button>
+      <button data-tab="analytics" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition flex items-center gap-2 text-slate-300 hover:bg-slate-800/70 border border-transparent">
+        <span>📊</span>
+        <span>۳. کارنامه شناختی و رادار عملکرد</span>
+      </button>
+      <button data-tab="heritage" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition flex items-center gap-2 text-slate-300 hover:bg-slate-800/70 border border-transparent">
+        <span>🏛️</span>
+        <span>۴. از خوارزمی تا علوم اعصاب (اثبات هندسی)</span>
+      </button>
+      <button data-tab="github" class="nav-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition flex items-center gap-2 text-amber-300 hover:bg-amber-500/10 border border-amber-500/20">
+        <span>🚀</span>
+        <span>۵. راهنمای گیت‌هاب و داوران</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
+
+    <!-- Hero Banner -->
+    <section class="glass-card rounded-3xl p-5 sm:p-7 border border-cyan-500/25 relative overflow-hidden no-print">
+      <div class="absolute -left-16 -top-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-8 space-y-3">
+          <div class="inline-flex flex-wrap items-center gap-2">
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+              محورهای پوشش‌داده‌شده: طراحی وب‌سایت + بازی ریاضی + نرم‌افزار آموزشی + ایده‌پردازی
+            </span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black leading-tight text-white">
+            ترکیب <span class="cyber-gradient-text">ریاضیات الگوریتمی</span> و <span class="gold-gradient-text">علوم اعصاب شناختی</span>
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            به جای آزمون‌های خسته‌کننده کاغذی، در <strong>Math-Neuro Gym</strong> مدارهای عصبی <strong>قشر پیش‌پیشانی (DLPFC)</strong>، <strong>شیار درون‌آهیانه‌ای (IPS)</strong> و <strong>استدلال فضایی سه‌بعدی</strong> خود را با الگوهای ریاضی، ماتریس‌های حافظه فعال و چرخش تنسورهای هندسی تقویت کنید و کارنامه زنده سیناپسی دریافت کنید.
+          </p>
+          <div class="flex flex-wrap items-center gap-3 pt-1">
+            <button id="btnHeroStartGame" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold text-sm shadow-lg shadow-cyan-500/25 transition flex items-center gap-2">
+              <span>⚡ شروع چالش نرو-ریاضی</span>
+            </button>
+            <button id="btnHeroLoadDemo" class="px-4 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-amber-300 border border-amber-500/30 font-semibold text-sm transition flex items-center gap-2">
+              <span>🧪 بارگذاری داده‌های نمونه (ویژه تست سریع داوران)</span>
+            </button>
+            <div class="text-xs text-slate-400 flex items-center gap-1.5">
+              <span>👤 اثر پژوهشی و اجرایی:</span>
+              <strong class="text-white underline decoration-cyan-400 underline-offset-4">امیرحسام فیروزفر</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Active Brain Region Monitor Card -->
+        <div class="lg:col-span-4 bg-slate-950/80 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-cyan-400 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+              پایش زنده ناحیه مغزی فعال
+            </span>
+            <span id="liveBrainFreqBadge" class="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+              Gamma 38.4 Hz
+            </span>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <!-- Mini Interactive Brain SVG -->
+            <svg viewBox="0 0 120 100" class="w-24 h-20 shrink-0">
+              <path id="miniBrainDLPFC" d="M20,48 C18,26 36,14 58,15 L58,50 L22,52 Z" fill="rgba(6, 182, 212, 0.55)" stroke="#22D3EE" stroke-width="1.8" />
+              <path id="miniBrainParietal" d="M58,15 C82,15 100,28 102,50 L60,52 Z" fill="rgba(139, 92, 246, 0.35)" stroke="#A78BFA" stroke-width="1.5" />
+              <path id="miniBrainOccipital" d="M78,52 L102,50 C104,68 92,82 76,82 Z" fill="rgba(16, 185, 129, 0.3)" stroke="#34D399" stroke-width="1.5" />
+              <path id="miniBrainTemporal" d="M32,52 L78,52 L76,80 C54,84 34,74 32,52 Z" fill="rgba(245, 158, 11, 0.35)" stroke="#FBBF24" stroke-width="1.5" />
+              <circle cx="42" cy="34" r="3" fill="#fff" class="animate-ping" />
+              <circle cx="74" cy="34" r="2.5" fill="#A78BFA" />
+              <circle cx="56" cy="64" r="2.5" fill="#FBBF24" />
+              <line x1="42" y1="34" x2="74" y2="34" stroke="#38BDF8" stroke-width="1" stroke-dasharray="2,2" />
+              <line x1="74" y1="34" x2="56" y2="64" stroke="#A78BFA" stroke-width="1" stroke-dasharray="2,2" />
+            </svg>
+            <div class="space-y-1">
+              <div id="liveBrainRegionName" class="text-sm font-extrabold text-white">
+                قشر پیش‌پیشانی (DLPFC)
+              </div>
+              <p id="liveBrainRegionDesc" class="text-xs text-slate-400 leading-relaxed">
+                مسئول نگه‌داری ماتریس‌های عددی در حافظه فعال و کنترل اجرایی توجه.
+              </p>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+            <span>بار شناختی فعلی: <strong id="liveCognitiveLoad" class="text-cyan-300">بهینه (۷۸٪)</strong></span>
+            <span>همگام‌سازی عصبی: <strong class="text-emerald-400">فعال</strong></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 1: MINI-GAMES ARENA                    -->
+    <!-- ========================================== -->
+    <section id="tab-arena" class="tab-panel space-y-6">
+      <!-- Game Selector Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <button data-game="memory" class="game-selector-card glass-card glass-card-hover rounded-2xl p-4 text-right border-2 border-cyan-400 neon-border-cyan transition flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-2xl">🧩</span>
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300">حافظه فعال (DLPFC)</span>
+            </div>
+            <h3 class="text-base font-black text-white">۱. ماتریس حافظه خوارزمی</h3>
+            <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+              به خاطر سپردن مکان و ترتیب تصاعدی اعداد اول و الگوهای ماتریسی یا چالش N-Back جبری.
+            </p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
+            <span class="text-slate-400">رکورد شما:</span>
+            <span id="bestScoreMemory" class="font-mono font-bold text-cyan-300 ltr-num">0 XP</span>
+          </div>
+        </button>
+
+        <button data-game="spatial" class="game-selector-card glass-card glass-card-hover rounded-2xl p-4 text-right border border-slate-800 transition flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-2xl">🧊</span>
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300">قشر آهیانه‌ای (SPL)</span>
+            </div>
+            <h3 class="text-base font-black text-white">۲. چرخش فضایی سه‌بعدی</h3>
+            <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+              تشخیص چندوجهی‌های وکسل چرخش‌یافته در فضای اقلیدسی سه‌بعدی از تصاویر آینه‌ای (کایرال).
+            </p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
+            <span class="text-slate-400">رکورد شما:</span>
+            <span id="bestScoreSpatial" class="font-mono font-bold text-violet-300 ltr-num">0 XP</span>
+          </div>
+        </button>
+
+        <button data-game="synapse" class="game-selector-card glass-card glass-card-hover rounded-2xl p-4 text-right border border-slate-800 transition flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-2xl">⚡</span>
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">شیار درون‌آهیانه‌ای (IPS)</span>
+            </div>
+            <h3 class="text-base font-black text-white">۳. سیناپس سرعت و استروپ</h3>
+            <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+              غلبه بر تداخل شناختی استروپ و مقایسه کسری از ثانیه مقادیر جبری، توان‌ها و هم‌نهشتی‌ها.
+            </p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
+            <span class="text-slate-400">رکورد شما:</span>
+            <span id="bestScoreSynapse" class="font-mono font-bold text-emerald-300 ltr-num">0 XP</span>
+          </div>
+        </button>
+
+        <button data-game="fractal" class="game-selector-card glass-card glass-card-hover rounded-2xl p-4 text-right border border-slate-800 transition flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-2xl">🌀</span>
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300">قطب پیشانی (BA10)</span>
+            </div>
+            <h3 class="text-base font-black text-white">۴. ماتریس استنتاج فرکتالی</h3>
+            <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+              کشف رابطه پنهان توپولوژیک، زاویه فاز، تعداد رئوس و حساب پیمانه‌ای در ماتریس ۳×۳.
+            </p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
+            <span class="text-slate-400">رکورد شما:</span>
+            <span id="bestScoreFractal" class="font-mono font-bold text-amber-300 ltr-num">0 XP</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Active Game Stage Container -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Main Interactive Stage (8 cols) -->
+        <div class="lg:col-span-8 glass-card rounded-3xl p-5 sm:p-6 border border-slate-800 flex flex-col justify-between min-h-[490px]">
+
+          <!-- GAME 1: WORKING MEMORY MATRIX & SEQUENTIAL RECALL -->
+          <div id="game-panel-memory" class="game-stage-panel space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div>
+                <span class="text-xs font-bold text-cyan-400">چالش ۱: تقویت قشر پیش‌پیشانی پشتی‌جانبی (DLPFC)</span>
+                <h3 class="text-xl font-black text-white">ماتریس حافظه فعال و دنباله ریاضی خوارزمی</h3>
+              </div>
+              <div class="flex items-center gap-2">
+                <select id="memoryModeSelect" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold text-cyan-300 focus:outline-none">
+                  <option value="ordered">حالت ۱: یادآوری به ترتیب صعودی مقادیر (Ordered Span)</option>
+                  <option value="pattern">حالت ۲: بازسازی الگوی هندسی ماتریس (Spatial Pattern)</option>
+                  <option value="nback">حالت ۳: دنباله 2-Back جبری (Algebraic 2-Back)</option>
+                </select>
+                <span id="memoryLevelBadge" class="px-3 py-1.5 rounded-xl bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-xs font-bold">
+                  سطح ۱ (۴ خانه)
+                </span>
+              </div>
+            </div>
+
+            <!-- Status / Instruction Banner -->
+            <div id="memoryInstructionBanner" class="bg-slate-900/90 border border-cyan-500/30 rounded-2xl p-3.5 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2.5">
+                <span id="memoryStatusEmoji" class="text-2xl">🎯</span>
+                <p id="memoryStatusText" class="text-xs sm:text-sm text-slate-200 font-medium">
+                  روی دکمه <strong>«شروع موج جدید»</strong> کلیک کنید. خانه‌های روشن‌شده و مقدار ریاضی آن‌ها را به خاطر بسپارید و سپس به <strong>ترتیب صعودی (از کوچک به بزرگ)</strong> انتخاب کنید!
+                </p>
+              </div>
+              <div class="text-left shrink-0">
+                <div class="text-[11px] text-slate-400">امتیاز این بازی</div>
+                <div id="memoryCurrentScore" class="text-lg font-black text-cyan-400 ltr-num">0</div>
+              </div>
+            </div>
+
+            <!-- Matrix Grid Mode Container -->
+            <div id="memoryGridWrapper" class="flex flex-col items-center justify-center py-2">
+              <div id="memoryGrid" class="grid grid-cols-4 gap-2.5 sm:gap-3 w-full max-w-[360px] aspect-square p-3 bg-slate-950/90 rounded-3xl border border-slate-800 shadow-inner">
+              </div>
+            </div>
+
+            <!-- N-Back Mode Container -->
+            <div id="memoryNBackWrapper" class="hidden flex-col items-center justify-center py-4 space-y-5">
+              <div class="flex items-center gap-4 text-xs text-slate-400">
+                <span>گام فعلی: <strong id="nbackStepNum" class="text-white ltr-num">0 / 12</strong></span>
+                <span>تطابق با <strong>۲ مرحله قبل (2-Back)</strong> را بسنجید!</span>
+              </div>
+              <div class="w-full max-w-md bg-slate-950 border-2 border-cyan-500/40 rounded-3xl p-8 text-center shadow-xl">
+                <div class="text-xs text-slate-400 mb-2">عبارت ریاضی جاری:</div>
+                <div id="nbackExpression" class="text-4xl sm:text-5xl font-black text-white ltr-num tracking-wider my-2">
+                  3² + 4
+                </div>
+                <div id="nbackHistoryHint" class="text-xs text-cyan-400/80 mt-3 font-mono">
+                  مقدار این عبارت را در ذهن حساب و ذخیره کنید...
+                </div>
+              </div>
+              <div class="flex items-center gap-4 w-full max-w-md">
+                <button id="btnNBackMatch" class="flex-1 py-3.5 rounded-2xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/50 text-emerald-300 font-black text-sm transition">
+                  ✅ برابر با ۲ گام قبل (Match)
+                </button>
+                <button id="btnNBackDifferent" class="flex-1 py-3.5 rounded-2xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/50 text-rose-300 font-black text-sm transition">
+                  ❌ متفاوت (Different)
+                </button>
+              </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800/80">
+              <div class="flex items-center gap-2">
+                <button id="btnStartMemoryRound" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm shadow-lg shadow-cyan-500/20 transition">
+                  ▶️ شروع موج جدید
+                </button>
+                <button id="btnMemoryReset" class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">
+                  🔄 بازنشانی سطح
+                </button>
+              </div>
+              <div class="text-xs text-slate-400">
+                دقت حافظه فعال: <strong id="memoryAccuracyLabel" class="text-emerald-400 ltr-num">100%</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- GAME 2: 3D MENTAL ROTATION & SPATIAL REASONING -->
+          <div id="game-panel-spatial" class="game-stage-panel hidden space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div>
+                <span class="text-xs font-bold text-violet-400">چالش ۲: تقویت قشر آهیانه‌ای فوقانی (Posterior Parietal Cortex)</span>
+                <h3 class="text-xl font-black text-white">چرخش ذهنی چندوجهی‌های سه‌بعدی (Mental Rotation SO(3))</h3>
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="spatialAngleReadout" class="px-3 py-1 rounded-xl bg-violet-500/15 text-violet-300 border border-violet-500/30 text-xs font-mono ltr-num">
+                  θ = (45°, 60°, 30°)
+                </span>
+                <span id="spatialScoreBadge" class="px-3 py-1 rounded-xl bg-slate-900 text-amber-300 border border-slate-700 text-xs font-bold ltr-num">
+                  0 XP
+                </span>
+              </div>
+            </div>
+
+            <p id="spatialStatusText" class="text-xs sm:text-sm text-slate-300 bg-slate-900/90 border border-violet-500/30 rounded-2xl p-3">
+              سازه سه‌بعدی مرجع (سمت راست) را در ذهن خود بچرخانید. کدام‌یک از ۴ گزینه، <strong>دقیقاً همان سازه چرخش‌یافته در فضا</strong> است (و تصویر آینه‌ای یا تغییریافته نیست)؟ می‌توانید با ماوس سازه مرجع را بچرخانید!
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+              <!-- Target 3D Canvas -->
+              <div class="md:col-span-5 bg-slate-950 rounded-2xl border border-violet-500/40 p-3 flex flex-col items-center">
+                <div class="w-full flex items-center justify-between text-xs text-slate-400 mb-1">
+                  <span class="font-bold text-violet-300">سازه مرجع سه‌بعدی (قابل چرخش با ماوس)</span>
+                  <button id="btnToggleAutoRotate" class="text-[11px] px-2 py-0.5 rounded bg-violet-500/20 text-violet-300">چرخش خودکار: فعال</button>
+                </div>
+                <canvas id="spatialTargetCanvas" width="240" height="210" class="w-full max-w-[240px] h-[210px] cursor-grab active:cursor-grabbing"></canvas>
+                <div class="text-[11px] text-slate-400 mt-1 font-mono ltr-num" id="spatialMatrixFormula">
+                  R = Rz(γ) · Ry(β) · Rx(α) | det(R) = +1
+                </div>
+              </div>
+
+              <!-- 4 Candidate 3D Canvases -->
+              <div class="md:col-span-7 grid grid-cols-2 gap-3">
+                <button data-spatial-opt="0" class="spatial-option-btn bg-slate-950/90 hover:bg-slate-900 border-2 border-slate-800 hover:border-violet-400 rounded-2xl p-2 flex flex-col items-center transition">
+                  <span class="text-xs font-bold text-slate-400 self-start px-2">گزینه ۱</span>
+                  <canvas id="spatialOptCanvas0" width="145" height="120" class="w-[145px] h-[120px]"></canvas>
+                </button>
+                <button data-spatial-opt="1" class="spatial-option-btn bg-slate-950/90 hover:bg-slate-900 border-2 border-slate-800 hover:border-violet-400 rounded-2xl p-2 flex flex-col items-center transition">
+                  <span class="text-xs font-bold text-slate-400 self-start px-2">گزینه ۲</span>
+                  <canvas id="spatialOptCanvas1" width="145" height="120" class="w-[145px] h-[120px]"></canvas>
+                </button>
+                <button data-spatial-opt="2" class="spatial-option-btn bg-slate-950/90 hover:bg-slate-900 border-2 border-slate-800 hover:border-violet-400 rounded-2xl p-2 flex flex-col items-center transition">
+                  <span class="text-xs font-bold text-slate-400 self-start px-2">گزینه ۳</span>
+                  <canvas id="spatialOptCanvas2" width="145" height="120" class="w-[145px] h-[120px]"></canvas>
+                </button>
+                <button data-spatial-opt="3" class="spatial-option-btn bg-slate-950/90 hover:bg-slate-900 border-2 border-slate-800 hover:border-violet-400 rounded-2xl p-2 flex flex-col items-center transition">
+                  <span class="text-xs font-bold text-slate-400 self-start px-2">گزینه ۴</span>
+                  <canvas id="spatialOptCanvas3" width="145" height="120" class="w-[145px] h-[120px]"></canvas>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800/80">
+              <button id="btnNextSpatialPuzzle" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-sm transition">
+                🎲 تولید سازه فضایی جدید
+              </button>
+              <div class="text-xs text-slate-400">
+                قانون شپارد-متزلر: زمان پاسخگویی متناسب با زاویه چرخش است (<span class="ltr-num font-mono text-violet-300">RT ∝ Δθ</span>)
+              </div>
+            </div>
+          </div>
+
+          <!-- GAME 3: SYNAPTIC NUMBER SENSE & ALGEBRAIC STROOP -->
+          <div id="game-panel-synapse" class="game-stage-panel hidden space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div>
+                <span class="text-xs font-bold text-emerald-400">چالش ۳: شیار درون‌آهیانه‌ای (hIPS) و قشر کمربندی قدامی (ACC)</span>
+                <h3 class="text-xl font-black text-white">سیناپس سرعت، حس عددی و استروپ جبری</h3>
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="synapseTimerBadge" class="px-3 py-1 rounded-xl bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-xs font-mono ltr-num">
+                  RT: -- ms
+                </span>
+                <span id="synapseStreakBadge" class="px-3 py-1 rounded-xl bg-amber-500/15 text-amber-300 border border-amber-500/30 text-xs font-bold">
+                  زنجیره: ۰ 🔥
+                </span>
+              </div>
+            </div>
+
+            <div id="synapseStatusBanner" class="bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-3.5 text-xs sm:text-sm text-slate-200">
+              <strong>قانون استروپ ریاضی:</strong> فریب اندازه ظاهری فونت را نخورید! در کسری از ثانیه، عبارتی که <strong>مقدار ریاضی بزرگ‌تری</strong> دارد را انتخاب کنید (یا اگر برابرند دکمه برابری را بزنید). کلیدهای جهت‌نما (⬅️ ⬆️ ➡️) نیز فعال هستند.
+            </div>
+
+            <!-- Dual Comparison Arena -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 py-2">
+              <button id="btnSynapseRight" class="bg-slate-950 hover:bg-slate-900 border-2 border-slate-800 hover:border-emerald-400 rounded-3xl p-6 min-h-[165px] flex flex-col items-center justify-center transition group">
+                <span class="text-xs text-slate-500 mb-2 group-hover:text-emerald-300">گزاره الف (سمت راست)</span>
+                <div id="synapseExprA" class="font-black text-white ltr-num transition-all">
+                  2⁵ - 7
+                </div>
+              </button>
+
+              <button id="btnSynapseLeft" class="bg-slate-950 hover:bg-slate-900 border-2 border-slate-800 hover:border-emerald-400 rounded-3xl p-6 min-h-[165px] flex flex-col items-center justify-center transition group">
+                <span class="text-xs text-slate-500 mb-2 group-hover:text-emerald-300">گزاره ب (سمت چپ)</span>
+                <div id="synapseExprB" class="font-black text-white ltr-num transition-all">
+                  √625
+                </div>
+              </button>
+            </div>
+
+            <div class="flex justify-center">
+              <button id="btnSynapseEqual" class="w-full sm:w-2/3 py-3 rounded-2xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/40 text-indigo-200 font-bold text-sm transition">
+                ⚖️ هر دو مقدار ریاضی دقیقاً برابرند (Equal Value)
+              </button>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800/80">
+              <button id="btnSynapseNewWave" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-sm transition">
+                ⚡ سؤال سرعتی بعدی
+              </button>
+              <div class="text-xs text-slate-400">
+                میانگین تاخیر سیناپسی شما: <strong id="synapseAvgRT" class="text-emerald-300 font-mono ltr-num">-- ms</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- GAME 4: FRACTAL & TOPOLOGICAL MATRIX SOLVER -->
+          <div id="game-panel-fractal" class="game-stage-panel hidden space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div>
+                <span class="text-xs font-bold text-amber-400">چالش ۴: قطب پیشانی (Brodmann Area 10) و یکپارچه‌سازی رابطه‌ای</span>
+                <h3 class="text-xl font-black text-white">رمزگشایی ماتریس‌های توپولوژیک و دنباله‌های هندسی</h3>
+              </div>
+              <span id="fractalPuzzleIndexBadge" class="px-3 py-1 rounded-xl bg-amber-500/15 text-amber-300 border border-amber-500/30 text-xs font-bold">
+                معمای ۱ از ۳
+              </span>
+            </div>
+
+            <div id="fractalPromptBox" class="bg-slate-900/90 border border-amber-500/30 rounded-2xl p-3.5 text-xs sm:text-sm text-slate-200">
+              در ماتریس ۳×۳ زیر، رابطه بین سطرها و ستون‌ها (تعداد اضلاع، زاویه چرخش فاز، نقاط مرکزی و حساب پیمانه‌ای) را کشف کنید و خانه نهم (؟) را کامل کنید.
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+              <!-- 3x3 Visual Pattern Matrix -->
+              <div class="md:col-span-7 flex justify-center">
+                <div id="fractalMatrixGrid" class="grid grid-cols-3 gap-2.5 p-3 bg-slate-950 rounded-3xl border border-slate-800 w-full max-w-[330px] aspect-square">
+                </div>
+              </div>
+
+              <!-- 4 Answer Choices + Logic Proof -->
+              <div class="md:col-span-5 space-y-3">
+                <div class="text-xs font-bold text-amber-300">گزینه صحیح برای خانه (؟) را انتخاب کنید:</div>
+                <div id="fractalOptionsGrid" class="grid grid-cols-2 gap-2.5">
+                </div>
+                <div id="fractalExplanationBox" class="hidden bg-indigo-950/70 border border-indigo-400/40 rounded-2xl p-3 text-xs text-indigo-200 leading-relaxed">
+                </div>
+                <button id="btnNextFractalPuzzle" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-xs transition">
+                  ⏭️ ماتریس توپولوژیک بعدی
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Side Panel: Live Neuroscience Telemetry & Cognitive Coach (4 cols) -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="glass-card rounded-3xl p-5 border border-slate-800 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="text-xl">🔬</span>
+                <h3 class="text-base font-black text-white">تحلیلگر زنده علوم اعصاب</h3>
+              </div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 font-mono">REAL-TIME fMRI SIM</span>
+            </div>
+
+            <!-- Active Neural Circuit Explanation -->
+            <div class="bg-slate-950/90 rounded-2xl p-3.5 border border-slate-800/90 space-y-2">
+              <div class="text-xs font-bold text-cyan-400" id="coachCircuitTitle">
+                مدار فعال: حلقه پیش‌پیشانی - آهیانه‌ای (Frontoparietal Network)
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed" id="coachCircuitBody">
+                هنگام به خاطر سپردن ماتریس اعداد و مرتب‌سازی صعودی آن‌ها، نورون‌های <strong>DLPFC</strong> اطلاعات را در بافر اپیزودیک نگه می‌دارند و <strong>شیار درون‌آهیانه‌ای (IPS)</strong> مقادیر عددی را روی خط اعداد ذهنی مقایسه می‌کند.
+              </p>
+            </div>
+
+            <!-- Live Performance Progress Bars -->
+            <div class="space-y-3">
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-slate-300">حافظه فعال جبری (Working Memory)</span>
+                  <span id="barLabelWM" class="font-mono font-bold text-cyan-400 ltr-num">76%</span>
+                </div>
+                <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                  <div id="barFillWM" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-500" style="width: 76%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-slate-300">تجسم و چرخش فضایی (Spatial 3D)</span>
+                  <span id="barLabelSpatial" class="font-mono font-bold text-violet-400 ltr-num">72%</span>
+                </div>
+                <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                  <div id="barFillSpatial" class="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full transition-all duration-500" style="width: 72%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-slate-300">سرعت پردازش و مهار تداخل (IPS/ACC)</span>
+                  <span id="barLabelSpeed" class="font-mono font-bold text-emerald-400 ltr-num">80%</span>
+                </div>
+                <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                  <div id="barFillSpeed" class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500" style="width: 80%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-slate-300">کشف الگوی فرکتالی و استنتاج (BA10)</span>
+                  <span id="barLabelLogic" class="font-mono font-bold text-amber-400 ltr-num">74%</span>
+                </div>
+                <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                  <div id="barFillLogic" class="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all duration-500" style="width: 74%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Synaptic Activity Log -->
+            <div class="pt-2 border-t border-slate-800">
+              <div class="text-xs font-bold text-slate-400 mb-2">گزارش لحظه‌ای سیگنال‌های شناختی:</div>
+              <div id="neuroEventLog" class="space-y-1.5 max-h-36 overflow-y-auto text-[11px] font-mono pr-1">
+                <div class="text-emerald-400">● [SYS] سیستم نرو-ریاضی آماده دریافت سیگنال است.</div>
+                <div class="text-cyan-300">● [DLPFC] بافر حافظه فعال در سطح بهینه قرار دارد.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: INTERACTIVE BRAIN ATLAS & EEG LAB   -->
+    <!-- ========================================== -->
+    <section id="tab-atlas" class="tab-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Interactive Brain SVG Map (7 cols) -->
+        <div class="lg:col-span-7 glass-card rounded-3xl p-6 border border-slate-800 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-bold text-cyan-400">نقشه‌برداری عملکردی مغز در حل مسائل ریاضی</span>
+              <h3 class="text-xl font-black text-white">اطلس تعاملی نواحی ۶گانه مغز ریاضی‌دان</h3>
+            </div>
+            <span class="text-xs text-slate-400">روی هر ناحیه از مغز کلیک کنید</span>
+          </div>
+
+          <!-- Large Interactive Anatomical Brain Diagram -->
+          <div class="bg-slate-950/90 rounded-3xl border border-slate-800 p-4 flex flex-col items-center">
+            <svg id="atlasBrainSvg" viewBox="0 0 500 340" class="w-full max-w-[480px] h-auto select-none">
+              <line x1="0" y1="170" x2="500" y2="170" stroke="rgba(148,163,184,0.1)" stroke-dasharray="4,4" />
+              <line x1="250" y1="0" x2="250" y2="340" stroke="rgba(148,163,184,0.1)" stroke-dasharray="4,4" />
+
+              <!-- 1. Rostrolateral Prefrontal Cortex (BA10) -->
+              <path data-region="ba10" class="brain-region-path" d="M55,185 C48,135 68,90 115,72 L145,135 L120,195 Z" fill="rgba(245, 158, 11, 0.45)" stroke="#F59E0B" stroke-width="2.5" />
+              <text x="88" y="145" fill="#FEF3C7" font-size="12" font-weight="bold" text-anchor="middle" pointer-events="none">قطب پیشانی (BA10)</text>
+
+              <!-- 2. DLPFC -->
+              <path data-region="dlpfc" class="brain-region-path" d="M115,72 C155,45 208,38 255,44 L245,145 L145,135 Z" fill="rgba(6, 182, 212, 0.55)" stroke="#06B6D4" stroke-width="2.5" />
+              <text x="190" y="95" fill="#E0F2FE" font-size="13" font-weight="bold" text-anchor="middle" pointer-events="none">DLPFC (حافظه فعال)</text>
+
+              <!-- 3. Anterior Cingulate Cortex (ACC) -->
+              <path data-region="acc" class="brain-region-path" d="M145,135 L245,145 L295,155 L280,192 L120,195 Z" fill="rgba(244, 63, 94, 0.45)" stroke="#F43F5E" stroke-width="2.5" />
+              <text x="210" y="172" fill="#FFE4E6" font-size="12" font-weight="bold" text-anchor="middle" pointer-events="none">قشر کمربندی (ACC)</text>
+
+              <!-- 4. Intraparietal Sulcus & Superior Parietal (IPS / SPL) -->
+              <path data-region="ips" class="brain-region-path" d="M255,44 C325,46 385,72 418,125 L335,165 L245,145 Z" fill="rgba(139, 92, 246, 0.55)" stroke="#8B5CF6" stroke-width="2.5" />
+              <text x="330" y="108" fill="#EDE9FE" font-size="13" font-weight="bold" text-anchor="middle" pointer-events="none">شیار آهیانه‌ای (IPS)</text>
+
+              <!-- 5. Angular Gyrus -->
+              <path data-region="angular" class="brain-region-path" d="M335,165 L418,125 C442,165 440,215 405,248 L315,215 Z" fill="rgba(16, 185, 129, 0.48)" stroke="#10B981" stroke-width="2.5" />
+              <text x="382" y="190" fill="#D1FAE5" font-size="12" font-weight="bold" text-anchor="middle" pointer-events="none">شکنج زاویه‌ای</text>
+
+              <!-- 6. Hippocampus -->
+              <path data-region="hippocampus" class="brain-region-path" d="M155,195 L280,192 L315,215 L350,255 C285,282 185,275 155,230 Z" fill="rgba(59, 130, 246, 0.48)" stroke="#3B82F6" stroke-width="2.5" />
+              <text x="245" y="238" fill="#DBEAFE" font-size="13" font-weight="bold" text-anchor="middle" pointer-events="none">هیپوکامپ و گیجگاهی</text>
+
+              <!-- Cerebellum outline -->
+              <path d="M350,255 C385,260 410,285 395,310 C365,320 325,310 310,285 L280,325 L245,325 L255,272" fill="rgba(100,116,139,0.2)" stroke="#64748B" stroke-width="1.5" stroke-dasharray="3,3" />
+
+              <!-- Neural Axon Pathways -->
+              <g stroke="#F8FAFC" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.65" pointer-events="none">
+                <line x1="190" y1="105" x2="325" y2="115" />
+                <line x1="210" y1="172" x2="190" y2="105" />
+                <line x1="325" y1="115" x2="375" y2="195" />
+                <line x1="245" y1="230" x2="210" y2="172" />
+              </g>
+            </svg>
+
+            <!-- Quick Region Selector Pills -->
+            <div class="flex flex-wrap justify-center gap-2 mt-3">
+              <button data-region-btn="dlpfc" class="region-pill-btn px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400">۱. قشر پیش‌پیشانی (DLPFC)</button>
+              <button data-region-btn="ips" class="region-pill-btn px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-violet-300 border border-slate-700">۲. شیار درون‌آهیانه‌ای (IPS)</button>
+              <button data-region-btn="ba10" class="region-pill-btn px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-amber-300 border border-slate-700">۳. قطب پیشانی (BA10)</button>
+              <button data-region-btn="angular" class="region-pill-btn px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-emerald-300 border border-slate-700">۴. شکنج زاویه‌ای</button>
+              <button data-region-btn="acc" class="region-pill-btn px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-rose-300 border border-slate-700">۵. قشر کمربندی (ACC)</button>
+              <button data-region-btn="hippocampus" class="region-pill-btn px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-blue-300 border border-slate-700">۶. هیپوکامپ</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Region Scientific Inspector + Live EEG Simulator (5 cols) -->
+        <div class="lg:col-span-5 space-y-5">
+          <!-- Selected Region Details Card -->
+          <div class="glass-card rounded-3xl p-5 border border-cyan-500/30 space-y-3">
+            <div class="flex items-center justify-between">
+              <span id="atlasDetailTag" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300">Brodmann Areas 9 & 46</span>
+              <span class="text-xs text-slate-400">تحلیل عملکرد شناختی</span>
+            </div>
+            <h4 id="atlasDetailTitle" class="text-xl font-black text-white">
+              قشر پیش‌پیشانی پشتی‌جانبی (DLPFC)
+            </h4>
+            <p id="atlasDetailBody" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              این ناحیه به عنوان «تخته سیاه ذهنی» (Mental Sketchpad) عمل می‌کند. وقتی در معادله‌ای چندمجهولی مقادیر میانی را نگه می‌دارید یا در بازی ماتریس خوارزمی اعداد را به ترتیب صعودی مرتب می‌کنید، مدارهای دوپامینرژیک DLPFC با فرکانس گاما شلیک می‌کنند.
+            </p>
+            <div class="bg-slate-950/80 rounded-2xl p-3 border border-slate-800 space-y-1.5 text-xs">
+              <div class="text-amber-300 font-bold">📌 کاربرد مستقیم در ریاضیات:</div>
+              <div id="atlasDetailMathRole" class="text-slate-300">
+                حل معادلات چندمرحله‌ای، اثبات‌های استقرایی، محاسبه ذهنی و نگه‌داری ماتریس‌ها در حافظه فعال.
+              </div>
+              <div class="text-cyan-300 font-bold pt-1">🎮 مینی‌گیم مرتبط در این پلتفرم:</div>
+              <div id="atlasDetailGameLink" class="text-slate-300">
+                بازی ۱: ماتریس حافظه خوارزمی و دنباله جبری 2-Back
+              </div>
+            </div>
+          </div>
+
+          <!-- Live EEG Fourier Brainwave Oscilloscope -->
+          <div class="glass-card rounded-3xl p-5 border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="text-base font-black text-white">شبیه‌ساز امواج مغزی (EEG Fourier Synth)</h4>
+                <p class="text-[11px] text-slate-400 ltr-num">V(t) = Σ Aᵢ · sin(2π fᵢ t + φᵢ)</p>
+              </div>
+              <span id="eegCurrentBandBadge" class="px-2.5 py-1 rounded-lg bg-violet-500/20 text-violet-300 text-xs font-mono ltr-num">
+                Gamma (40 Hz)
+              </span>
+            </div>
+
+            <canvas id="eegWaveCanvas" width="420" height="130" class="w-full h-[130px] bg-slate-950 rounded-2xl border border-slate-800"></canvas>
+
+            <div class="grid grid-cols-4 gap-1.5">
+              <button data-eeg="theta" class="eeg-band-btn py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-bold text-slate-300 border border-slate-800">
+                Theta (6Hz)<br><span class="text-[10px] font-normal text-slate-400">شهود خلاق</span>
+              </button>
+              <button data-eeg="alpha" class="eeg-band-btn py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-bold text-slate-300 border border-slate-800">
+                Alpha (10Hz)<br><span class="text-[10px] font-normal text-slate-400">تمرکز آرام</span>
+              </button>
+              <button data-eeg="beta" class="eeg-band-btn py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-bold text-slate-300 border border-slate-800">
+                Beta (22Hz)<br><span class="text-[10px] font-normal text-slate-400">محاسبه فعال</span>
+              </button>
+              <button data-eeg="gamma" class="eeg-band-btn py-2 rounded-xl bg-violet-600/30 text-xs font-bold text-violet-200 border border-violet-400">
+                Gamma (40Hz)<br><span class="text-[10px] font-normal text-violet-300">اوج حل مسئله</span>
+              </button>
+            </div>
+            <p id="eegBandDescription" class="text-xs text-slate-400 leading-relaxed">
+              <strong>موج گاما (30 تا 45 هرتز):</strong> بالاترین سطح همگام‌سازی بین قشر پیش‌پیشانی و آهیانه‌ای هنگام حل مسائل پیچیده المپیاد ریاضی و کشف الگوهای ناگهانی (Aha! Moment).
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: COGNITIVE TELEMETRY & RADAR REPORT  -->
+    <!-- ========================================== -->
+    <section id="tab-analytics" class="tab-panel hidden space-y-6">
+      <div class="glass-card rounded-3xl p-6 border border-slate-800">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-6">
+          <div>
+            <span class="text-xs font-bold text-cyan-400">پروفایل تحلیلی نرو-ریاضی (Cognitive Telemetry Profile)</span>
+            <h3 class="text-2xl font-black text-white">کارنامه علمی عملکرد شناختی و ریاضیات</h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              طراحی و استانداردسازی در پلتفرم Math-Neuro Gym توسط <strong>امیرحسام فیروزفر</strong> — دبیرستان شهید بهشتی دوره اول
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 no-print">
+            <button id="btnPopulateDemoAnalytics" class="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-xs font-bold transition">
+              🧪 شبیه‌سازی کارنامه کامل (ویژه داوران)
+            </button>
+            <button id="btnPrintCertificate" class="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-black transition">
+              🖨️ چاپ / ذخیره PDF کارنامه شناختی
+            </button>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <div class="lg:col-span-6 bg-slate-950/80 rounded-3xl p-4 border border-slate-800">
+            <div class="text-sm font-bold text-white mb-2 text-center">رادار ۵ محور توانمندی نرو-ریاضی</div>
+            <div class="relative h-72 w-full">
+              <canvas id="neuroRadarChart"></canvas>
+            </div>
+          </div>
+
+          <div class="lg:col-span-6 bg-slate-950/80 rounded-3xl p-4 border border-slate-800">
+            <div class="text-sm font-bold text-white mb-2 text-center">روند سرعت پردازش سیناپسی (Reaction Time ms) در گام‌های اخیر</div>
+            <div class="relative h-72 w-full">
+              <canvas id="neuroHistoryChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scientific Metrics Table & Prescription -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+          <div class="bg-slate-900/90 rounded-2xl p-4 border border-slate-800 space-y-1">
+            <div class="text-xs text-slate-400">ظرفیت حافظه فعال کُوآن (Cowan's K)</div>
+            <div id="reportMetricK" class="text-2xl font-black text-cyan-400 ltr-num">K = 4.2 Items</div>
+            <p class="text-[11px] text-slate-400">میانگین جمعیت هم‌سن: ۳.۵ آیتم همزمان در بافر پیش‌پیشانی.</p>
+          </div>
+
+          <div class="bg-slate-900/90 rounded-2xl p-4 border border-slate-800 space-y-1">
+            <div class="text-xs text-slate-400">شیب چرخش فضایی (Mental Rotation Rate)</div>
+            <div id="reportMetricRotation" class="text-2xl font-black text-violet-400 ltr-num">52° / sec</div>
+            <p class="text-[11px] text-slate-400">توانایی تبدیل ماتریس‌های دوران اقلیدسی سه‌بعدی در قشر آهیانه‌ای.</p>
+          </div>
+
+          <div class="bg-slate-900/90 rounded-2xl p-4 border border-slate-800 space-y-1">
+            <div class="text-xs text-slate-400">شاخص حساسیت سیگنال به نویز (d')</div>
+            <div id="reportMetricDPrime" class="text-2xl font-black text-emerald-400 ltr-num">d' = 2.85 (High)</div>
+            <p class="text-[11px] text-slate-400">مقاومت بالا در برابر خطای استروپ و تشخیص دقیق الگوهای عددی.</p>
+          </div>
+        </div>
+
+        <!-- Official Signature & Festival Stamp Footer inside Certificate -->
+        <div class="mt-6 pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400">
+          <div>
+            <span>صادرشده توسط موتور تحلیلی <strong>Math-Neuro Gym</strong></span>
+            <span class="mx-2">|</span>
+            <span>مجری طرح جشنواره: <strong>دبیرستان شهید بهشتی دوره اول</strong></span>
+          </div>
+          <div class="text-amber-300 font-bold">
+            طراح و توسعه‌دهنده سامانه: امیرحسام فیروزفر
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: HERITAGE & AL-KHWARIZMI VISUALIZER  -->
+    <!-- ========================================== -->
+    <section id="tab-heritage" class="tab-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-7 glass-card rounded-3xl p-6 border border-amber-500/30 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-bold text-amber-400">پیوند میراث طلایی خوارزمی با علوم اعصاب فضایی</span>
+              <h3 class="text-xl font-black text-white">چرا اثبات هندسی خوارزمی مغز را ۲ برابر سریع‌تر درگیر می‌کند؟</h3>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-300 text-xs font-bold">تعاملی</span>
+          </div>
+
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            محمد بن موسی خوارزمی برای حل معادله درجه دوم <span class="ltr-num font-mono text-amber-300">x² + bx = c</span> به جای حفظ کردن فرمول خشک <span class="ltr-num font-mono text-cyan-300">x = (-b ± √(b²+4c))/2</span>، از <strong>تکمیل مربع هندسی</strong> استفاده کرد. علوم اعصاب مدرن نشان می‌دهد وقتی جبر به مساحت هندسی تبدیل می‌شود، علاوه بر شکنج زاویه‌ای، <strong>قشر بینایی-فضایی آهیانه‌ای</strong> نیز فعال شده و درک شهودی عمیقی ایجاد می‌کند.
+          </p>
+
+          <!-- Sliders for x and b -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-cyan-300 font-bold">طول ضلع مجهول (x):</span>
+                <span id="khwarizmiXVal" class="font-mono font-bold text-white ltr-num">x = 6</span>
+              </div>
+              <input id="sliderKhwarizmiX" type="range" min="3" max="10" step="1" value="6" class="w-full accent-cyan-400 cursor-pointer" />
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-amber-300 font-bold">ضریب خطی (b):</span>
+                <span id="khwarizmiBVal" class="font-mono font-bold text-white ltr-num">b = 4</span>
+              </div>
+              <input id="sliderKhwarizmiB" type="range" min="2" max="10" step="2" value="4" class="w-full accent-amber-400 cursor-pointer" />
+            </div>
+          </div>
+
+          <!-- Interactive Canvas for Al-Khwarizmi Geometric Proof -->
+          <div class="bg-slate-950 rounded-2xl border border-slate-800 p-4 flex flex-col items-center">
+            <canvas id="khwarizmiCanvas" width="440" height="270" class="w-full max-w-[440px] h-[270px]"></canvas>
+            <div id="khwarizmiEquationReadout" class="mt-3 text-xs sm:text-sm font-mono text-center text-emerald-300 ltr-num bg-slate-900 px-4 py-2 rounded-xl border border-slate-800 w-full">
+              x² + 4x = 36 + 24 = 60  ⇒  (x + 2)² = 60 + 4 = 64  ⇒  x + 2 = 8  ⇒  x = 6
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Pillars of Mathematical Neuroscience (5 cols) -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="glass-card rounded-3xl p-5 border border-slate-800 space-y-3">
+            <h4 class="text-lg font-black text-white flex items-center gap-2">
+              <span>📚</span>
+              <span>مبانی علمی پروژه (ویژه مستندات جشنواره)</span>
+            </h4>
+
+            <div class="space-y-3 text-xs leading-relaxed">
+              <div class="bg-slate-950/90 p-3.5 rounded-2xl border border-slate-800">
+                <div class="font-bold text-cyan-300 mb-1">۱. قانون هب و سیناپتوژنز (Hebbian Plasticity)</div>
+                <p class="text-slate-300">
+                  طبق معادله یادگیری هب <span class="ltr-num font-mono text-cyan-200">Δwᵢⱼ = η · xᵢ · xⱼ</span>، وقتی دو نورون همزمان درگیر حل یک الگوی ریاضی می‌شوند، اتصال سیناپسی بین آن‌ها تقویت شده و سرعت انتقال پیام عصبی افزایش می‌یابد.
+                </p>
+              </div>
+
+              <div class="bg-slate-950/90 p-3.5 rounded-2xl border border-slate-800">
+                <div class="font-bold text-violet-300 mb-1">۲. مدل حافظه فعال بدلی (Baddeley's Working Memory)</div>
+                <p class="text-slate-300">
+                  حافظه فعال شامل «مجری مرکزی»، «صفحه طراحی دیداری-فضایی» و «حلقه واج‌شناختی» است. بازی اول این پلتفرم مستقیماً ظرفیت صفحه دیداری-فضایی را با اعداد اول محک می‌زند.
+                </p>
+              </div>
+
+              <div class="bg-slate-950/90 p-3.5 rounded-2xl border border-slate-800">
+                <div class="font-bold text-emerald-300 mb-1">۳. قانون وبر-فخنر در حس عددی (Weber-Fechner Law)</div>
+                <p class="text-slate-300">
+                  شیار درون‌آهیانه‌ای (IPS) اعداد را روی یک مقیاس لگاریتمی فشرده بازنمایی می‌کند (<span class="ltr-num font-mono text-emerald-200">S = k · ln(I)</span>). تمرین‌های سرعتی بازی سوم، دقت تفکیک این خط اعداد ذهنی را بالا می‌برد.
+                </p>
+              </div>
+
+              <div class="bg-slate-950/90 p-3.5 rounded-2xl border border-slate-800">
+                <div class="font-bold text-amber-300 mb-1">۴. معادله چرخش ذهنی شپارد و متزلر (1971)</div>
+                <p class="text-slate-300">
+                  زمان لازم برای تشخیص دو جسم سه‌بعدی هم‌نهشت، رابطه خطی با زاویه دوران آن‌ها دارد: <span class="ltr-num font-mono text-amber-200">T(θ) = T₀ + ω⁻¹ · θ</span>. بازی دوم سرعت دوران ذهنی (<span class="ltr-num font-mono">ω</span>) را افزایش می‌دهد.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 5: GITHUB PAGES & JUDGE'S GUIDE        -->
+    <!-- ========================================== -->
+    <section id="tab-github" class="tab-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Judge's Evaluation Scorecard (6 cols) -->
+        <div class="lg:col-span-6 glass-card rounded-3xl p-6 border border-amber-500/30 space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold">
+            🏆 شناسنامه اثر برای داوران جشنواره خلاقیت‌های ریاضی
+          </div>
+          <h3 class="text-2xl font-black text-white">چرا Math-Neuro Gym یک پروژه جامع و متمایز است؟</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            این پروژه به صورت همزمان <strong>۴ محور اصلی فراخوان جشنواره دهه ریاضیات دبیرستان شهید بهشتی دوره اول</strong> را در یک پلتفرم واحد تحت وب پوشش می‌دهد:
+          </p>
+
+          <div class="space-y-2.5 text-xs sm:text-sm">
+            <div class="bg-slate-950/90 p-3.5 rounded-2xl border border-slate-800 flex items-start gap-3">
+              <span class="text-lg">💡</span>
+              <div>
+                <strong class="text-cyan-300">۱. ایده‌پردازی ریاضی نوین:</strong>
+                <p class="text-slate-300 text-xs mt-0.5">پیوند میان الگوهای جبری/توپولوژیک و تقویت مدارهای عصبی قشر پیش‌پیشانی و آهیانه‌ای.</p>
+              </div>
+            </div>
+            <div class="bg-slate-950/90 p-3.5 rounded-2xl border border-slate-800 flex items-start gap-3">
+              <span class="text-lg">💻</span>
+              <div>
+                <strong class="text-violet-300">۲. طراحی وب‌سایت مدرن و واکنش‌گرا:</strong>
+                <p class="text-slate-300 text-xs mt-0.5">معماری تک‌فایلی بدون وابستگی به سرور، گرافیک سه‌بعدی Canvas، سینت‌سایزر صوتی Web Audio API و پشتیبانی کامل از موبایل و دسکتاپ.</p>
+              </div>
+            </div>
+            <div class="bg-slate-950/90 p-3.5 rounded-2xl border border-slate-800 flex items-start gap-3">
+              <span class="text-lg">🎮</span>
+              <div>
+                <strong class="text-emerald-300">۳. طراحی بازی ریاضی هدفمند:</strong>
+                <p class="text-slate-300 text-xs mt-0.5">۴ بازی کاملاً تعاملی با تولید الگوریتمی مراحل بی‌نهایت (Procedural Generation) و سنجش میلی‌ثانیه‌ای زمان واکنش.</p>
+              </div>
+            </div>
+            <div class="bg-slate-950/90 p-3.5 rounded-2xl border border-slate-800 flex items-start gap-3">
+              <span class="text-lg">🎓</span>
+              <div>
+                <strong class="text-amber-300">۴. طراحی نرم‌افزار آموزشی و آزمایشگاهی:</strong>
+                <p class="text-slate-300 text-xs mt-0.5">دارای اطلس تعاملی مغز، شبیه‌ساز امواج مغزی فوریه، اثبات هندسی تعاملی خوارزمی و صدور کارنامه چاپی.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-r from-indigo-950 to-slate-900 p-4 rounded-2xl border border-indigo-500/30 text-xs space-y-1">
+            <div class="font-bold text-white">مشخصات صاحب اثر:</div>
+            <div class="text-slate-300">نام و نام خانوادگی سازنده: <strong class="text-amber-300">امیرحسام فیروزفر</strong></div>
+            <div class="text-slate-300">رویداد: <strong class="text-cyan-300">جشنواره خلاقیت‌های ریاضی به مناسبت دهه ریاضیات</strong></div>
+            <div class="text-slate-300">مجری طرح: <strong class="text-white">دبیرستان شهید بهشتی دوره اول</strong></div>
+          </div>
+        </div>
+
+        <!-- Step-by-Step GitHub Pages Deployment Guide (6 cols) -->
+        <div class="lg:col-span-6 glass-card rounded-3xl p-6 border border-cyan-500/30 space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold">
+            🚀 راهنمای گام‌به‌گام انتشار در GitHub Pages (در ۲ دقیقه)
+          </div>
+          <h3 class="text-xl font-black text-white">چگونه سایت را با لینک مستقیم در گیت‌هاب آنلاین کنیم؟</h3>
+
+          <ol class="space-y-3 text-xs sm:text-sm text-slate-300 list-decimal list-inside leading-relaxed">
+            <li class="bg-slate-950/90 p-3 rounded-2xl border border-slate-800">
+              وارد سایت <strong class="text-cyan-300 font-mono">github.com</strong> شوید، یک اکانت بسازید (یا وارد شوید) و روی دکمه <strong class="text-emerald-300">New Repository (+)</strong> کلیک کنید.
+            </li>
+            <li class="bg-slate-950/90 p-3 rounded-2xl border border-slate-800">
+              نام مخزن (Repository name) را مثلاً <code class="text-amber-300 font-mono bg-slate-900 px-1.5 py-0.5 rounded">math-neuro-gym</code> بگذارید، گزینه <strong>Public</strong> را انتخاب کنید، تیک <strong>Add a README file</strong> را بزنید و روی <strong>Create repository</strong> کلیک کنید.
+            </li>
+            <li class="bg-slate-950/90 p-3 rounded-2xl border border-slate-800">
+              در صفحه مخزن، روی <strong>Add file ▾</strong> و سپس <strong>Upload files</strong> کلیک کنید. فایل <code class="text-cyan-300 font-mono bg-slate-900 px-1.5 py-0.5 rounded">index.html</code> این پروژه را داخل صفحه بکشید و رها کنید و دکمه سبز <strong>Commit changes</strong> را بزنید.
+              <div class="mt-1 text-[11px] text-amber-300">⚠️ نکته مهم: نام فایل در گیت‌هاب حتماً باید دقیقاً <code class="font-mono">index.html</code> باشد تا مستقیم باز شود!</div>
+            </li>
+            <li class="bg-slate-950/90 p-3 rounded-2xl border border-slate-800">
+              وارد تب <strong>Settings ⚙️</strong> در بالای مخزن شوید، از منوی سمت چپ روی <strong>Pages</strong> کلیک کنید، در بخش <strong>Branch</strong> گزینه <code class="text-emerald-300 font-mono">main</code> را انتخاب کرده و روی <strong>Save</strong> کلیک کنید.
+            </li>
+            <li class="bg-slate-950/90 p-3 rounded-2xl border border-emerald-500/40 text-emerald-200">
+              🎉 <strong>تمام شد!</strong> پس از حدود ۶۰ ثانیه، لینک مستقیم سایت شما به شکل زیر فعال می‌شود و می‌توانید آن را برای داوران جشنواره ارسال کنید:
+              <div class="mt-2 font-mono text-xs bg-slate-900 p-2 rounded-xl text-cyan-300 ltr-num text-center select-all">
+                https://YOUR-USERNAME.github.io/math-neuro-gym/
+              </div>
+            </li>
+          </ol>
+
+          <div class="flex flex-wrap items-center gap-2 pt-2">
+            <button id="btnDownloadStandaloneHtml" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-black text-xs sm:text-sm transition shadow-lg shadow-cyan-500/20">
+              📥 دانلود مستقیم فایل index.html (آماده آپلود در گیت‌هاب)
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Judge Presentation Modal -->
+  <div id="judgeModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 no-print">
+    <div class="glass-card max-w-xl w-full rounded-3xl p-6 border border-cyan-500/40 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🏆</span>
+          <h3 class="text-lg font-black text-white">معرفی سامانه به هیئت داوران جشنواره</h3>
+        </div>
+        <button id="btnCloseJudgeModal" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold">✕</button>
+      </div>
+      <div class="space-y-3 text-xs sm:text-sm text-slate-300 leading-relaxed">
+        <p>
+          با سلام و احترام خدمت داوران گرامی <strong>جشنواره خلاقیت‌های ریاضی دبیرستان شهید بهشتی دوره اول</strong>؛
+        </p>
+        <p>
+          پلتفرم <strong>Math-Neuro Gym</strong> با هدف تبدیل یادگیری ریاضی از یک فرآیند حفظی به یک <strong>ورزش شناختی و سیناپسی مبتنی بر علوم اعصاب</strong> توسط <strong>امیرحسام فیروزفر</strong> طراحی و پیاده‌سازی شده است.
+        </p>
+        <ul class="space-y-1.5 list-disc list-inside text-cyan-200">
+          <li>شامل ۴ مینی‌گیم علمی برای تقویت حافظه فعال (DLPFC)، تجسم فضایی سه‌بعدی (SPL)، حس عددی (IPS) و کشف الگو (BA10).</li>
+          <li>دارای اطلس تعاملی مغز، شبیه‌ساز زنده امواج مغزی و اثبات هندسی تعاملی معادلات درجه دوم خوارزمی.</li>
+          <li>سنجش زمان واکنش در مقیاس میلی‌ثانیه و صدور کارنامه راداری ۵محوره.</li>
+        </ul>
+      </div>
+      <div class="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-slate-800">
+        <button id="btnModalLoadDemo" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition">
+          🧪 بارگذاری داده‌های آزمایشی و مشاهده رادار عملکرد
+        </button>
+        <button id="btnModalStartPlaying" class="px-4 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 font-bold text-xs transition">
+          شروع تجربه بازی‌ها
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="neuroToast" class="fixed bottom-5 left-5 z-50 hidden items-center gap-2.5 px-4 py-3 rounded-2xl glass-card border border-cyan-400/50 text-xs sm:text-sm font-bold text-white shadow-2xl no-print">
+    <span id="neuroToastIcon">✨</span>
+    <span id="neuroToastText">پیام سیستم</span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="relative z-10 border-t border-slate-800/80 bg-slate-950/90 px-4 py-5 mt-8 text-xs text-slate-400 no-print">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+        <span>پلتفرم تعاملی علوم اعصاب و ریاضی (<strong>Math-Neuro Gym</strong>) — ویژه دهه ریاضیات</span>
+      </div>
+      <div class="text-center sm:text-left">
+        <span>طراح و سازنده: <strong class="text-amber-300">امیرحسام فیروزفر</strong></span>
+        <span class="mx-2 text-slate-600">|</span>
+        <span>دبیرستان شهید بهشتی دوره اول</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================== -->
+  <!-- APPLICATION JAVASCRIPT ENGINE              -->
+  <!-- ========================================== -->
+  <script>
+    (function() {
+      'use strict';
+
+      // --- 1. GLOBAL STATE & TELEMETRY ---
+      const state = {
+        soundEnabled: true,
+        binauralActive: false,
+        activeTab: 'arena',
+        activeGame: 'memory',
+        totalXP: 350,
+        neuroIQ: 118,
+        wmSpan: 2.4,
+        reactionTimes: [680, 640, 610, 590, 620],
+        metrics: {
+          wm: 76,
+          spatial: 72,
+          speed: 80,
+          logic: 74,
+          attention: 78
+        },
+        bestScores: {
+          memory: 0,
+          spatial: 0,
+          synapse: 0,
+          fractal: 0
+        },
+        memory: {
+          mode: 'ordered',
+          level: 1,
+          score: 0,
+          activeCells: [],
+          userStep: 0,
+          phase: 'idle',
+          attempts: 0,
+          successes: 0,
+          timerId: null,
+          nbackStream: [],
+          nbackIndex: 0,
+          nbackAnswered: false
+        },
+        spatial: {
+          score: 0,
+          correctOption: 0,
+          targetVoxels: [],
+          optionsData: [],
+          rotX: 0.55,
+          rotY: 0.75,
+          rotZ: 0.25,
+          autoRotate: true,
+          isDragging: false,
+          lastMouseX: 0,
+          lastMouseY: 0,
+          trialStartTime: 0,
+          answered: false
+        },
+        synapse: {
+          score: 0,
+          streak: 0,
+          valA: 25,
+          valB: 25,
+          trialStart: 0,
+          active: false
+        },
+        fractal: {
+          score: 0,
+          puzzleIdx: 0,
+          answered: false
+        },
+        eegBand: 'gamma',
+        eegPhase: 0
+      };
+
+      // --- 2. WEB AUDIO SYNTHESIZER & BINAURAL FOCUS GENERATOR ---
+      let audioCtx = null;
+      let binauralOsc1 = null;
+      let binauralOsc2 = null;
+      let binauralGain = null;
+
+      function ensureAudioCtx() {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            audioCtx = new AudioContextClass();
+          }
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }
+
+      function playSynthTone(freq, durationMs, type = 'sine', gainVal = 0.08) {
+        if (!state.soundEnabled) return;
+        try {
+          ensureAudioCtx();
+          if (!audioCtx) return;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          gain.gain.setValueAtTime(gainVal, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + durationMs / 1000);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + durationMs / 1000);
+        } catch (e) {}
+      }
+
+      function playSuccessChord() {
+        playSynthTone(523.25, 160, 'triangle', 0.09);
+        setTimeout(() => playSynthTone(659.25, 180, 'triangle', 0.09), 90);
+        setTimeout(() => playSynthTone(783.99, 260, 'sine', 0.11), 180);
+      }
+
+      function playErrorTone() {
+        playSynthTone(220, 220, 'sawtooth', 0.07);
+        setTimeout(() => playSynthTone(174.61, 280, 'sawtooth', 0.07), 120);
+      }
+
+      function toggleBinauralFocusWave() {
+        try {
+          ensureAudioCtx();
+          if (!audioCtx) return;
+          const dot = document.getElementById('binauralStatusDot');
+          if (state.binauralActive) {
+            if (binauralOsc1) { binauralOsc1.stop(); binauralOsc1.disconnect(); binauralOsc1 = null; }
+            if (binauralOsc2) { binauralOsc2.stop(); binauralOsc2.disconnect(); binauralOsc2 = null; }
+            state.binauralActive = false;
+            dot.className = 'w-2 h-2 rounded-full bg-slate-500';
+            showToast('🔇 موج صوتی تمرکز گاما (40Hz) متوقف شد.', '🧠');
+          } else {
+            binauralOsc1 = audioCtx.createOscillator();
+            binauralOsc2 = audioCtx.createOscillator();
+            binauralGain = audioCtx.createGain();
+            binauralOsc1.type = 'sine';
+            binauralOsc2.type = 'sine';
+            binauralOsc1.frequency.setValueAtTime(200, audioCtx.currentTime);
+            binauralOsc2.frequency.setValueAtTime(240, audioCtx.currentTime);
+            binauralGain.gain.setValueAtTime(0.025, audioCtx.currentTime);
+            binauralOsc1.connect(binauralGain);
+            binauralOsc2.connect(binauralGain);
+            binauralGain.connect(audioCtx.destination);
+            binauralOsc1.start();
+            binauralOsc2.start();
+            state.binauralActive = true;
+            dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
+            showToast('🎧 موج دوگوشی گاما ۴۰ هرتز (همگام‌سازی سیناپسی) فعال شد.', '⚡');
+          }
+        } catch (e) {}
+      }
+
+      // --- 3. UI HELPERS, LOGGING & TELEMETRY UPDATES ---
+      function showToast(msg, icon = '✨') {
+        const toast = document.getElementById('neuroToast');
+        document.getElementById('neuroToastIcon').textContent = icon;
+        document.getElementById('neuroToastText').textContent = msg;
+        toast.classList.remove('hidden');
+        toast.classList.add('flex');
+        clearTimeout(toast._hideTimer);
+        toast._hideTimer = setTimeout(() => {
+          toast.classList.add('hidden');
+          toast.classList.remove('flex');
+        }, 3400);
+      }
+
+      function logNeuroEvent(regionTag, message, colorClass = 'text-cyan-300') {
+        const logBox = document.getElementById('neuroEventLog');
+        if (!logBox) return;
+        const item = document.createElement('div');
+        item.className = colorClass;
+        const now = new Date();
+        const timeStr = now.toTimeString().slice(0, 8);
+        item.textContent = `● [${timeStr} | ${regionTag}] ${message}`;
+        logBox.prepend(item);
+        while (logBox.children.length > 18) {
+          logBox.removeChild(logBox.lastChild);
+        }
+      }
+
+      function updateTelemetryUI() {
+        const avgRT = Math.round(
+          state.reactionTimes.reduce((a, b) => a + b, 0) / Math.max(1, state.reactionTimes.length)
+        );
+        const meanMetric = Math.round(
+          (state.metrics.wm + state.metrics.spatial + state.metrics.speed + state.metrics.logic + state.metrics.attention) / 5
+        );
+        state.neuroIQ = Math.min(165, Math.max(95, 80 + Math.round(meanMetric * 0.52)));
+        state.wmSpan = (1.5 + (state.metrics.wm / 100) * 3.8).toFixed(1);
+
+        document.getElementById('statNeuroIQ').textContent = state.neuroIQ;
+        document.getElementById('statWMIndex').textContent = `${state.wmSpan} K`;
+        document.getElementById('statReactionMs').textContent = `${avgRT} ms`;
+        document.getElementById('statTotalXP').textContent = state.totalXP;
+
+        document.getElementById('bestScoreMemory').textContent = `${state.bestScores.memory} XP`;
+        document.getElementById('bestScoreSpatial').textContent = `${state.bestScores.spatial} XP`;
+        document.getElementById('bestScoreSynapse').textContent = `${state.bestScores.synapse} XP`;
+        document.getElementById('bestScoreFractal').textContent = `${state.bestScores.fractal} XP`;
+
+        const clamp = (v) => Math.min(100, Math.max(20, Math.round(v)));
+        document.getElementById('barLabelWM').textContent = `${clamp(state.metrics.wm)}%`;
+        document.getElementById('barFillWM').style.width = `${clamp(state.metrics.wm)}%`;
+
+        document.getElementById('barLabelSpatial').textContent = `${clamp(state.metrics.spatial)}%`;
+        document.getElementById('barFillSpatial').style.width = `${clamp(state.metrics.spatial)}%`;
+
+        document.getElementById('barLabelSpeed').textContent = `${clamp(state.metrics.speed)}%`;
+        document.getElementById('barFillSpeed').style.width = `${clamp(state.metrics.speed)}%`;
+
+        document.getElementById('barLabelLogic').textContent = `${clamp(state.metrics.logic)}%`;
+        document.getElementById('barFillLogic').style.width = `${clamp(state.metrics.logic)}%`;
+
+        document.getElementById('reportMetricK').textContent = `K = ${state.wmSpan} Items`;
+        const rotSpeed = Math.round(25 + state.metrics.spatial * 0.55);
+        document.getElementById('reportMetricRotation').textContent = `${rotSpeed}° / sec`;
+        const dPrime = (1.2 + (meanMetric / 100) * 2.2).toFixed(2);
+        document.getElementById('reportMetricDPrime').textContent = `d' = ${dPrime} (High)`;
+
+        updateCharts();
+      }
+
+      const brainMonitorInfoMap = {
+        dlpfc: {
+          name: 'قشر پیش‌پیشانی پشتی‌جانبی (DLPFC)',
+          desc: 'نگه‌داری ماتریس‌های عددی در حافظه فعال و مرتب‌سازی الگوریتمی.',
+          freq: 'Gamma 39.2 Hz',
+          circuitTitle: 'مدار فعال: حلقه پیش‌پیشانی (DLPFC Working Memory Buffer)',
+          circuitBody: 'نورون‌های هرمی لایه III در قشر پیش‌پیشانی با شلیک پایدار، مکان و مقدار اعداد اول را بدون حضور محرک بینایی حفظ می‌کنند.'
+        },
+        spatial: {
+          name: 'قشر آهیانه‌ای فوقانی (SPL / IPS)',
+          desc: 'پردازش ماتریس‌های دوران اقلیدسی سه‌بعدی و تشخیص تقارن فضایی.',
+          freq: 'Beta-Gamma 32.5 Hz',
+          circuitTitle: 'مدار فعال: مسیر پشتی بینایی-فضایی (Dorsal Where/How Stream)',
+          circuitBody: 'قشر آهیانه‌ای فوقانی مختصات وکسل‌های سه‌بعدی را تحت تبدیل ماتریس متعامد SO(3) می‌چرخاند تا تصویر آینه‌ای را رد کند.'
+        },
+        synapse: {
+          name: 'شیار درون‌آهیانه‌ای (hIPS) + قشر کمربندی (ACC)',
+          desc: 'مقایسه سریع مقادیر عددی و مهار تداخل شناختی استروپ.',
+          freq: 'High-Gamma 42.0 Hz',
+          circuitTitle: 'مدار فعال: شبکه حس عددی و پایش تعارض (IPS-ACC Loop)',
+          circuitBody: 'قشر کمربندی قدامی (ACC) خطای ناشی از اندازه ظاهری فونت را مهار کرده و شیار درون‌آهیانه‌ای مقدار واقعی عبارت را استخراج می‌کند.'
+        },
+        fractal: {
+          name: 'قطب پیشانی (Rostrolateral PFC - BA10)',
+          desc: 'یکپارچه‌سازی رابطه‌ای، استنتاج قواعد توپولوژیک و کشف الگوی ماتریس.',
+          freq: 'Theta-Gamma 36.8 Hz',
+          circuitTitle: 'مدار فعال: شبکه یکپارچه‌سازی رابطه‌ای (BA10 Relational Network)',
+          circuitBody: 'ناحیه ۱۰ برودمن در قطب پیشانی، همزمان چندین متغیر (تعداد اضلاع، زاویه چرخش و حساب پیمانه‌ای) را در سطر و ستون ترکیب می‌کند.'
+        }
+      };
+
+      function highlightBrainMonitor(regionKey) {
+        const info = brainMonitorInfoMap[regionKey] || brainMonitorInfoMap.dlpfc;
+        document.getElementById('liveBrainRegionName').textContent = info.name;
+        document.getElementById('liveBrainRegionDesc').textContent = info.desc;
+        document.getElementById('liveBrainFreqBadge').textContent = info.freq;
+        document.getElementById('coachCircuitTitle').textContent = info.circuitTitle;
+        document.getElementById('coachCircuitBody').textContent = info.circuitBody;
+      }
+
+      // --- 4. NAVIGATION TABS & GAME SWITCHING ---
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tab = btn.getAttribute('data-tab');
+          switchTab(tab);
+          playSynthTone(440, 80, 'sine', 0.05);
+        });
+      });
+
+      function switchTab(tabId) {
+        state.activeTab = tabId;
+        document.querySelectorAll('.nav-tab-btn').forEach(b => {
+          if (b.getAttribute('data-tab') === tabId) {
+            b.className = 'nav-tab-btn active-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition flex items-center gap-2 bg-gradient-to-r from-cyan-500/25 to-indigo-500/25 text-cyan-300 border border-cyan-400/40';
+          } else {
+            b.className = 'nav-tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition flex items-center gap-2 text-slate-300 hover:bg-slate-800/70 border border-transparent';
+          }
+        });
+
+        document.querySelectorAll('.tab-panel').forEach(panel => {
+          panel.classList.add('hidden');
+        });
+        const target = document.getElementById(`tab-${tabId}`);
+        if (target) target.classList.remove('hidden');
+
+        if (tabId === 'analytics') {
+          setTimeout(updateCharts, 60);
+        } else if (tabId === 'heritage') {
+          drawKhwarizmiProof();
+        }
+      }
+
+      document.querySelectorAll('.game-selector-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const gameId = card.getAttribute('data-game');
+          selectGame(gameId);
+          playSynthTone(520, 90, 'triangle', 0.06);
+        });
+      });
+
+      function selectGame(gameId) {
+        state.activeGame = gameId;
+        document.querySelectorAll('.game-selector-card').forEach(c => {
+          const isMatch = c.getAttribute('data-game') === gameId;
+          c.className = `game-selector-card glass-card glass-card-hover rounded-2xl p-4 text-right transition flex flex-col justify-between ${
+            isMatch ? 'border-2 border-cyan-400 neon-border-cyan' : 'border border-slate-800'
+          }`;
+        });
+
+        document.querySelectorAll('.game-stage-panel').forEach(p => p.classList.add('hidden'));
+        const activePanel = document.getElementById(`game-panel-${gameId}`);
+        if (activePanel) activePanel.classList.remove('hidden');
+
+        if (gameId === 'memory') {
+          highlightBrainMonitor('dlpfc');
+        } else if (gameId === 'spatial') {
+          highlightBrainMonitor('spatial');
+          renderAllSpatialCanvases();
+        } else if (gameId === 'synapse') {
+          highlightBrainMonitor('synapse');
+          if (!state.synapse.active) generateSynapseRound();
+        } else if (gameId === 'fractal') {
+          highlightBrainMonitor('fractal');
+          renderFractalPuzzle();
+        }
+      }
+
+      // =========================================================================
+      // GAME 1: WORKING MEMORY MATRIX & ALGEBRAIC N-BACK
+      // =========================================================================
+      const mathTilePool = [
+        { val: 2, expr: '2' },
+        { val: 3, expr: '3' },
+        { val: 5, expr: '5' },
+        { val: 7, expr: '2³-1' },
+        { val: 11, expr: '11' },
+        { val: 13, expr: '3²+4' },
+        { val: 17, expr: '4²+1' },
+        { val: 19, expr: '19' },
+        { val: 23, expr: '5²-2' },
+        { val: 29, expr: '29' },
+        { val: 31, expr: '2⁵-1' },
+        { val: 37, expr: '6²+1' }
+      ];
+
+      function buildMemoryGridUI() {
+        const grid = document.getElementById('memoryGrid');
+        grid.innerHTML = '';
+        for (let i = 0; i < 16; i++) {
+          const cell = document.createElement('button');
+          cell.type = 'button';
+          cell.dataset.idx = i;
+          cell.className = 'matrix-cell rounded-2xl bg-slate-900/90 border-2 border-slate-800 hover:border-slate-700 flex flex-col items-center justify-center font-black text-base sm:text-lg text-white select-none h-full w-full';
+          cell.addEventListener('click', () => handleMemoryCellClick(i));
+          grid.appendChild(cell);
+        }
+      }
+
+      function startMemoryRound() {
+        clearTimeout(state.memory.timerId);
+        const mode = document.getElementById('memoryModeSelect').value;
+        state.memory.mode = mode;
+
+        if (mode === 'nback') {
+          document.getElementById('memoryGridWrapper').classList.add('hidden');
+          document.getElementById('memoryNBackWrapper').classList.remove('hidden');
+          document.getElementById('memoryNBackWrapper').classList.add('flex');
+          startNBackStream();
+          return;
+        }
+
+        document.getElementById('memoryGridWrapper').classList.remove('hidden');
+        document.getElementById('memoryNBackWrapper').classList.add('hidden');
+        document.getElementById('memoryNBackWrapper').classList.remove('flex');
+
+        buildMemoryGridUI();
+        const count = Math.min(8, 3 + state.memory.level);
+        document.getElementById('memoryLevelBadge').textContent = `سطح ${state.memory.level} (${count} خانه)`;
+
+        const indices = [];
+        while (indices.length < count) {
+          const r = Math.floor(Math.random() * 16);
+          if (!indices.includes(r)) indices.push(r);
+        }
+
+        const shuffledPool = [...mathTilePool].sort(() => Math.random() - 0.5).slice(0, count);
+        const activeCells = indices.map((idx, i) => ({
+          idx,
+          val: shuffledPool[i].val,
+          expr: shuffledPool[i].expr
+        }));
+
+        activeCells.sort((a, b) => a.val - b.val);
+        state.memory.activeCells = activeCells;
+        state.memory.userStep = 0;
+        state.memory.phase = 'memorize';
+
+        const cells = document.querySelectorAll('#memoryGrid .matrix-cell');
+        activeCells.forEach(item => {
+          const el = cells[item.idx];
+          el.className = 'matrix-cell rounded-2xl bg-gradient-to-br from-cyan-500/40 to-indigo-600/40 border-2 border-cyan-300 flex flex-col items-center justify-center font-black text-white shadow-lg shadow-cyan-500/20 h-full w-full';
+          el.innerHTML = `<span class="ltr-num text-sm sm:text-base text-cyan-200">${item.expr}</span>`;
+        });
+
+        document.getElementById('memoryStatusEmoji').textContent = '👀';
+        document.getElementById('memoryStatusText').innerHTML = mode === 'ordered'
+          ? 'مقادیر و مکان خانه‌های روشن را به خاطر بسپارید! تا لحظاتی دیگر پنهان می‌شوند و باید آن‌ها را <strong>از کوچک‌ترین مقدار به بزرگ‌ترین مقدار</strong> انتخاب کنید.'
+          : 'الگوی هندسی خانه‌های روشن را به خاطر بسپارید! پس از پنهان شدن، همان خانه‌ها را انتخاب کنید.';
+
+        playSynthTone(587.33, 140, 'sine', 0.07);
+
+        const memorizeTime = Math.max(1800, count * 620);
+        state.memory.timerId = setTimeout(() => {
+          state.memory.phase = 'recall';
+          state.memory.recallStartTime = performance.now();
+          cells.forEach(el => {
+            el.className = 'matrix-cell rounded-2xl bg-slate-900 hover:bg-slate-800 border-2 border-slate-700 flex flex-col items-center justify-center font-black text-white h-full w-full cursor-pointer';
+            el.innerHTML = '<span class="text-slate-600 text-xs">؟</span>';
+          });
+          document.getElementById('memoryStatusEmoji').textContent = '🧠';
+          document.getElementById('memoryStatusText').innerHTML = mode === 'ordered'
+            ? 'حالا خانه‌ها را به <strong>ترتیب صعودی مقدار ریاضی (از کم به زیاد)</strong> کلیک کنید!'
+            : 'حالا تمام خانه‌هایی که روشن بودند را بازسازی کنید!';
+          playSynthTone(440, 100, 'triangle', 0.06);
+        }, memorizeTime);
+      }
+
+      function handleMemoryCellClick(cellIdx) {
+        if (state.memory.phase !== 'recall') return;
+        const cells = document.querySelectorAll('#memoryGrid .matrix-cell');
+        const clickedEl = cells[cellIdx];
+
+        if (state.memory.mode === 'ordered') {
+          const expected = state.memory.activeCells[state.memory.userStep];
+          if (expected && expected.idx === cellIdx) {
+            clickedEl.className = 'matrix-cell rounded-2xl bg-emerald-500/35 border-2 border-emerald-400 flex flex-col items-center justify-center font-black text-white h-full w-full';
+            clickedEl.innerHTML = `<span class="ltr-num text-xs sm:text-sm text-emerald-200">${expected.expr} = ${expected.val}</span>`;
+            state.memory.userStep++;
+            playSynthTone(520 + state.memory.userStep * 65, 110, 'triangle', 0.08);
+
+            if (state.memory.userStep >= state.memory.activeCells.length) {
+              finishMemoryRound(true);
+            }
+          } else {
+            clickedEl.className = 'matrix-cell rounded-2xl bg-rose-500/40 border-2 border-rose-400 flex flex-col items-center justify-center font-black text-white h-full w-full';
+            clickedEl.innerHTML = '✕';
+            finishMemoryRound(false);
+          }
+        } else {
+          const found = state.memory.activeCells.find(c => c.idx === cellIdx && !c.hit);
+          if (found) {
+            found.hit = true;
+            clickedEl.className = 'matrix-cell rounded-2xl bg-emerald-500/35 border-2 border-emerald-400 flex flex-col items-center justify-center font-black text-white h-full w-full';
+            clickedEl.innerHTML = '✓';
+            state.memory.userStep++;
+            playSynthTone(540 + state.memory.userStep * 50, 100, 'triangle', 0.08);
+            if (state.memory.userStep >= state.memory.activeCells.length) {
+              finishMemoryRound(true);
+            }
+          } else {
+            clickedEl.className = 'matrix-cell rounded-2xl bg-rose-500/40 border-2 border-rose-400 flex flex-col items-center justify-center font-black text-white h-full w-full';
+            clickedEl.innerHTML = '✕';
+            finishMemoryRound(false);
+          }
+        }
+      }
+
+      function finishMemoryRound(success) {
+        state.memory.phase = 'idle';
+        state.memory.attempts++;
+        const rt = Math.round((performance.now() - (state.memory.recallStartTime || performance.now())) / Math.max(1, state.memory.activeCells.length));
+
+        if (success) {
+          state.memory.successes++;
+          const gained = 35 + state.memory.level * 15;
+          state.memory.score += gained;
+          state.totalXP += gained;
+          state.bestScores.memory = Math.max(state.bestScores.memory, state.memory.score);
+          state.metrics.wm = Math.min(100, state.metrics.wm + 3.5);
+          state.metrics.attention = Math.min(100, state.metrics.attention + 2);
+          state.reactionTimes.push(Math.min(1200, Math.max(280, rt)));
+          state.memory.level = Math.min(5, state.memory.level + 1);
+
+          playSuccessChord();
+          document.getElementById('memoryStatusEmoji').textContent = '🎉';
+          document.getElementById('memoryStatusText').innerHTML = `فوق‌العاده! تمام خانه‌ها را با موفقیت بازخوانی کردید (<strong>+${gained} XP</strong>). سطح حافظه فعال ارتقا یافت!`;
+          logNeuroEvent('DLPFC', `ماتریس سطح ${state.memory.level - 1} با موفقیت بازخوانی شد (+${gained} XP).`, 'text-emerald-400');
+          showToast(`آفرین! +${gained} امتیاز سیناپسی حافظه فعال`, '🧠');
+        } else {
+          playErrorTone();
+          const cells = document.querySelectorAll('#memoryGrid .matrix-cell');
+          state.memory.activeCells.forEach(item => {
+            const el = cells[item.idx];
+            if (!el.innerHTML.includes('=')) {
+              el.className = 'matrix-cell rounded-2xl bg-amber-500/25 border border-amber-400/60 flex flex-col items-center justify-center text-xs text-amber-200 h-full w-full';
+              el.innerHTML = `<span class="ltr-num">${item.expr}=${item.val}</span>`;
+            }
+          });
+          document.getElementById('memoryStatusEmoji').textContent = '💡';
+          document.getElementById('memoryStatusText').innerHTML = 'ترتیب یا مکان انتخاب‌شده نادرست بود. مقادیر صحیح روی ماتریس نمایش داده شد. دوباره تلاش کنید!';
+          logNeuroEvent('ACC', 'تشخیص خطای ترتیب در بافر حافظه فعال؛ بازتنظیم توجه.', 'text-amber-300');
+        }
+
+        document.getElementById('memoryCurrentScore').textContent = state.memory.score;
+        const acc = Math.round((state.memory.successes / Math.max(1, state.memory.attempts)) * 100);
+        document.getElementById('memoryAccuracyLabel').textContent = `${acc}%`;
+        updateTelemetryUI();
+      }
+
+      function startNBackStream() {
+        const baseVals = [9, 12, 16, 20, 25];
+        const exprMap = {
+          9: ['3²', '15 - 6', '√81', '2³ + 1'],
+          12: ['3 × 4', '2⁴ - 4', '6 + 6', '24 ÷ 2'],
+          16: ['4²', '2⁴', '20 - 4', '8 × 2'],
+          20: ['5 × 4', '4² + 4', '30 - 10', '2 × 10'],
+          25: ['5²', '20 + 5', '3³ - 2', '50 ÷ 2']
+        };
+        const stream = [];
+        for (let i = 0; i < 12; i++) {
+          let v;
+          if (i >= 2 && Math.random() < 0.42) {
+            v = stream[i - 2].val;
+          } else {
+            v = baseVals[Math.floor(Math.random() * baseVals.length)];
+          }
+          const forms = exprMap[v];
+          const expr = forms[Math.floor(Math.random() * forms.length)];
+          stream.push({ val: v, expr });
+        }
+        state.memory.nbackStream = stream;
+        state.memory.nbackIndex = 0;
+        renderNBackItem();
+      }
+
+      function renderNBackItem() {
+        const idx = state.memory.nbackIndex;
+        const stream = state.memory.nbackStream;
+        if (idx >= stream.length) {
+          document.getElementById('nbackExpression').textContent = 'پایان دور! 🎉';
+          document.getElementById('nbackHistoryHint').textContent = 'برای شروع دور جدید روی «شروع موج جدید» کلیک کنید.';
+          return;
+        }
+        state.memory.nbackAnswered = false;
+        document.getElementById('nbackStepNum').textContent = `${idx + 1} / ${stream.length}`;
+        document.getElementById('nbackExpression').textContent = stream[idx].expr;
+        if (idx < 2) {
+          document.getElementById('nbackHistoryHint').textContent = `گام ${idx + 1}: فقط مقدار (${stream[idx].val}) را به خاطر بسپارید (گام بعدی مقایسه شروع می‌شود)...`;
+          setTimeout(() => {
+            if (state.memory.mode === 'nback' && state.memory.nbackIndex === idx) {
+              state.memory.nbackIndex++;
+              renderNBackItem();
+            }
+          }, 1900);
+        } else {
+          document.getElementById('nbackHistoryHint').textContent = 'آیا مقدار این عبارت با عبارت ۲ گام قبل برابر است؟';
+        }
+      }
+
+      function handleNBackAnswer(isMatchClaimed) {
+        const idx = state.memory.nbackIndex;
+        const stream = state.memory.nbackStream;
+        if (idx < 2 || idx >= stream.length || state.memory.nbackAnswered) return;
+        state.memory.nbackAnswered = true;
+        const actualMatch = stream[idx].val === stream[idx - 2].val;
+        if (isMatchClaimed === actualMatch) {
+          state.memory.score += 30;
+          state.totalXP += 30;
+          state.bestScores.memory = Math.max(state.bestScores.memory, state.memory.score);
+          state.metrics.wm = Math.min(100, state.metrics.wm + 2);
+          playSuccessChord();
+          showToast('تطابق 2-Back صحیح! +30 XP', '✅');
+        } else {
+          playErrorTone();
+          showToast(`خطا! ۲ گام قبل برابر با ${stream[idx - 2].val} بود.`, '⚠️');
+        }
+        document.getElementById('memoryCurrentScore').textContent = state.memory.score;
+        updateTelemetryUI();
+        setTimeout(() => {
+          state.memory.nbackIndex++;
+          renderNBackItem();
+        }, 650);
+      }
+
+      document.getElementById('btnStartMemoryRound').addEventListener('click', startMemoryRound);
+      document.getElementById('btnMemoryReset').addEventListener('click', () => {
+        state.memory.level = 1;
+        startMemoryRound();
+      });
+      document.getElementById('memoryModeSelect').addEventListener('change', startMemoryRound);
+      document.getElementById('btnNBackMatch').addEventListener('click', () => handleNBackAnswer(true));
+      document.getElementById('btnNBackDifferent').addEventListener('click', () => handleNBackAnswer(false));
+
+      // =========================================================================
+      // GAME 2: 3D MENTAL ROTATION & ISOMETRIC TENSOR FOLD
+      // =========================================================================
+      const basePolyhedra = [
+        [ [0,0,0], [1,0,0], [2,0,0], [2,1,0], [2,1,1], [0,0,-1] ],
+        [ [0,0,0], [0,1,0], [0,2,0], [1,2,0], [1,2,1], [0,0,-1], [-1,0,-1] ],
+        [ [0,0,0], [1,0,0], [1,1,0], [1,2,0], [1,2,-1], [0,0,1], [0,-1,1] ],
+        [ [0,0,0], [-1,0,0], [0,1,0], [0,2,0], [0,2,1], [1,2,1], [-1,0,-1] ],
+        [ [0,0,0], [0,1,0], [1,1,0], [2,1,0], [2,1,-1], [0,0,1], [0,-1,1] ]
+      ];
+
+      function rotatePoint3D(pt, rx, ry, rz) {
+        let [x, y, z] = pt;
+        let y1 = y * Math.cos(rx) - z * Math.sin(rx);
+        let z1 = y * Math.sin(rx) + z * Math.cos(rx);
+        let x2 = x * Math.cos(ry) + z1 * Math.sin(ry);
+        let z2 = -x * Math.sin(ry) + z1 * Math.cos(ry);
+        let x3 = x2 * Math.cos(rz) - y1 * Math.sin(rz);
+        let y3 = x2 * Math.sin(rz) + y1 * Math.cos(rz);
+        return [x3, y3, z2];
+      }
+
+      function drawVoxelStructureOnCanvas(canvasId, voxels, rx, ry, rz, scale = 22, colorScheme = 'violet') {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        let cx = 0, cy = 0, cz = 0;
+        voxels.forEach(v => { cx += v[0]; cy += v[1]; cz += v[2]; });
+        cx /= voxels.length; cy /= voxels.length; cz /= voxels.length;
+
+        const half = 0.46;
+        const cubeVerts = [
+          [-half,-half,-half], [half,-half,-half], [half,half,-half], [-half,half,-half],
+          [-half,-half,half],  [half,-half,half],  [half,half,half],  [-half,half,half]
+        ];
+        const faces = [
+          { idx: [0,1,2,3], shade: 0.65 },
+          { idx: [4,5,6,7], shade: 1.0 },
+          { idx: [0,1,5,4], shade: 0.80 },
+          { idx: [2,3,7,6], shade: 0.72 },
+          { idx: [1,2,6,5], shade: 0.90 },
+          { idx: [0,3,7,4], shade: 0.60 }
+        ];
+
+        const allFaces = [];
+        voxels.forEach((v, vIdx) => {
+          const vx = v[0] - cx;
+          const vy = v[1] - cy;
+          const vz = v[2] - cz;
+          const transformedVerts = cubeVerts.map(cv =>
+            rotatePoint3D([vx + cv[0], vy + cv[1], vz + cv[2]], rx, ry, rz)
+          );
+          faces.forEach(f => {
+            const pts = f.idx.map(i => transformedVerts[i]);
+            const avgZ = (pts[0][2] + pts[1][2] + pts[2][2] + pts[3][2]) / 4;
+            allFaces.push({ pts, avgZ, shade: f.shade, isHead: vIdx === 0 });
+          });
+        });
+
+        allFaces.sort((a, b) => a.avgZ - b.avgZ);
+
+        allFaces.forEach(face => {
+          ctx.beginPath();
+          face.pts.forEach((p, idx) => {
+            const sx = w / 2 + p[0] * scale;
+            const sy = h / 2 - p[1] * scale;
+            if (idx === 0) ctx.moveTo(sx, sy);
+            else ctx.lineTo(sx, sy);
+          });
+          ctx.closePath();
+
+          if (face.isHead) {
+            ctx.fillStyle = `rgba(6, 182, 212, ${0.65 * face.shade + 0.25})`;
+            ctx.strokeStyle = '#E0F2FE';
+          } else if (colorScheme === 'violet') {
+            ctx.fillStyle = `rgba(139, 92, 246, ${0.65 * face.shade + 0.2})`;
+            ctx.strokeStyle = '#DDD6FE';
+          } else {
+            ctx.fillStyle = `rgba(99, 102, 241, ${0.65 * face.shade + 0.2})`;
+            ctx.strokeStyle = '#C7D2FE';
+          }
+          ctx.lineWidth = 1.2;
+          ctx.fill();
+          ctx.stroke();
+        });
+      }
+
+      function generateSpatialPuzzle() {
+        const base = basePolyhedra[Math.floor(Math.random() * basePolyhedra.length)];
+        state.spatial.targetVoxels = base.map(v => [...v]);
+        state.spatial.correctOption = Math.floor(Math.random() * 4);
+        state.spatial.answered = false;
+        state.spatial.trialStartTime = performance.now();
+
+        document.querySelectorAll('.spatial-option-btn').forEach(btn => {
+          btn.className = 'spatial-option-btn bg-slate-950/90 hover:bg-slate-900 border-2 border-slate-800 hover:border-violet-400 rounded-2xl p-2 flex flex-col items-center transition';
+        });
+
+        state.spatial.optionsData = [];
+        for (let i = 0; i < 4; i++) {
+          const rx = (0.4 + i * 0.65) + Math.random() * 0.4;
+          const ry = (0.8 + i * 0.55) + Math.random() * 0.4;
+          const rz = (0.3 + i * 0.45);
+          if (i === state.spatial.correctOption) {
+            state.spatial.optionsData.push({
+              voxels: base.map(v => [...v]),
+              rx, ry, rz
+            });
+          } else if (i === (state.spatial.correctOption + 1) % 4) {
+            state.spatial.optionsData.push({
+              voxels: base.map(v => [-v[0], v[1], v[2]]),
+              rx, ry, rz
+            });
+          } else if (i === (state.spatial.correctOption + 2) % 4) {
+            state.spatial.optionsData.push({
+              voxels: base.map(v => [v[0], v[1], -v[2]]),
+              rx, ry, rz
+            });
+          } else {
+            const altered = base.map(v => [...v]);
+            altered[altered.length - 1] = [altered[altered.length - 1][0], altered[altered.length - 1][1] + 1, altered[altered.length - 1][2]];
+            state.spatial.optionsData.push({
+              voxels: altered,
+              rx, ry, rz
+            });
+          }
+        }
+        renderAllSpatialCanvases();
+      }
+
+      function renderAllSpatialCanvases() {
+        drawVoxelStructureOnCanvas(
+          'spatialTargetCanvas',
+          state.spatial.targetVoxels,
+          state.spatial.rotX,
+          state.spatial.rotY,
+          state.spatial.rotZ,
+          26,
+          'violet'
+        );
+        const deg = (r) => Math.round(((r * 180) / Math.PI) % 360);
+        document.getElementById('spatialAngleReadout').textContent =
+          `θ = (${deg(state.spatial.rotX)}°, ${deg(state.spatial.rotY)}°, ${deg(state.spatial.rotZ)}°)`;
+
+        state.spatial.optionsData.forEach((opt, idx) => {
+          drawVoxelStructureOnCanvas(`spatialOptCanvas${idx}`, opt.voxels, opt.rx, opt.ry, opt.rz, 17, 'indigo');
+        });
+      }
+
+      const targetCanvasEl = document.getElementById('spatialTargetCanvas');
+      targetCanvasEl.addEventListener('mousedown', e => {
+        state.spatial.isDragging = true;
+        state.spatial.lastMouseX = e.clientX;
+        state.spatial.lastMouseY = e.clientY;
+      });
+      window.addEventListener('mouseup', () => { state.spatial.isDragging = false; });
+      window.addEventListener('mousemove', e => {
+        if (!state.spatial.isDragging) return;
+        const dx = e.clientX - state.spatial.lastMouseX;
+        const dy = e.clientY - state.spatial.lastMouseY;
+        state.spatial.lastMouseX = e.clientX;
+        state.spatial.lastMouseY = e.clientY;
+        state.spatial.rotY += dx * 0.012;
+        state.spatial.rotX += dy * 0.012;
+        renderAllSpatialCanvases();
+      });
+
+      document.getElementById('btnToggleAutoRotate').addEventListener('click', (e) => {
+        state.spatial.autoRotate = !state.spatial.autoRotate;
+        e.currentTarget.textContent = `چرخش خودکار: ${state.spatial.autoRotate ? 'فعال' : 'غیرفعال'}`;
+      });
+
+      document.querySelectorAll('.spatial-option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (state.spatial.answered) return;
+          state.spatial.answered = true;
+          const idx = parseInt(btn.getAttribute('data-spatial-opt'), 10);
+          const rt = Math.round(performance.now() - state.spatial.trialStartTime);
+
+          if (idx === state.spatial.correctOption) {
+            btn.className = 'spatial-option-btn bg-emerald-500/25 border-2 border-emerald-400 rounded-2xl p-2 flex flex-col items-center transition';
+            state.spatial.score += 45;
+            state.totalXP += 45;
+            state.bestScores.spatial = Math.max(state.bestScores.spatial, state.spatial.score);
+            state.metrics.spatial = Math.min(100, state.metrics.spatial + 4);
+            state.reactionTimes.push(Math.min(1400, Math.max(350, rt)));
+            playSuccessChord();
+            document.getElementById('spatialStatusText').innerHTML = `✅ <strong>تشخیص فضایی دقیق!</strong> گزینه ${idx + 1} یک دوران متعامد سه‌بعدی با دترمینان <span class="ltr-num font-mono">+1</span> از سازه مرجع است (+45 XP).`;
+            logNeuroEvent('SPL', `چرخش ذهنی سه‌بعدی در ${rt}ms با موفقیت انجام شد.`, 'text-violet-300');
+            showToast('آفرین! چرخش سه‌بعدی صحیح (+45 XP)', '🧊');
+          } else {
+            btn.className = 'spatial-option-btn bg-rose-500/25 border-2 border-rose-400 rounded-2xl p-2 flex flex-col items-center transition';
+            const correctBtn = document.querySelector(`.spatial-option-btn[data-spatial-opt="${state.spatial.correctOption}"]`);
+            if (correctBtn) {
+              correctBtn.className = 'spatial-option-btn bg-emerald-500/25 border-2 border-emerald-400 rounded-2xl p-2 flex flex-col items-center transition';
+            }
+            playErrorTone();
+            document.getElementById('spatialStatusText').innerHTML = `❌ گزینه انتخابی یک <strong>تصویر آینه‌ای (کایرال با دترمینان ۱-)</strong> یا سازه تغییریافته بود. گزینه صحیح (${state.spatial.correctOption + 1}) با کادر سبز مشخص شد.`;
+            logNeuroEvent('SPL', 'تداخل تصویر آینه‌ای (Chiral Mirror Error) در چرخش سه‌بعدی.', 'text-rose-300');
+          }
+          document.getElementById('spatialScoreBadge').textContent = `${state.spatial.score} XP`;
+          updateTelemetryUI();
+        });
+      });
+
+      document.getElementById('btnNextSpatialPuzzle').addEventListener('click', generateSpatialPuzzle);
+
+      // =========================================================================
+      // GAME 3: SYNAPTIC NUMBER SENSE & ALGEBRAIC STROOP
+      // =========================================================================
+      const synapseProblems = [
+        { a: '2⁵ - 5', valA: 27, b: '3³', valB: 27 },
+        { a: '√144 + 7', valA: 19, b: '4² + 2', valB: 18 },
+        { a: '3⁴ ÷ 3', valA: 27, b: '5² + 4', valB: 29 },
+        { a: '7 × 8 - 6', valA: 50, b: '2⁶ - 12', valB: 52 },
+        { a: '√225 + 9', valA: 24, b: '5! ÷ 5', valB: 24 },
+        { a: '29 (mod 7)', valA: 1, b: '18 (mod 5)', valB: 3 },
+        { a: 'log₂(64)', valA: 6, b: '√49', valB: 7 },
+        { a: '3² + 4²', valA: 25, b: '5²', valB: 25 },
+        { a: '6² - 11', valA: 25, b: '2⁵ - 8', valB: 24 },
+        { a: '11 × 4', valA: 44, b: '7² - 4', valB: 45 }
+      ];
+
+      function generateSynapseRound() {
+        const item = synapseProblems[Math.floor(Math.random() * synapseProblems.length)];
+        const swap = Math.random() < 0.5;
+        state.synapse.valA = swap ? item.valB : item.valA;
+        state.synapse.valB = swap ? item.valA : item.valB;
+        const textA = swap ? item.b : item.a;
+        const textB = swap ? item.a : item.b;
+
+        const elA = document.getElementById('synapseExprA');
+        const elB = document.getElementById('synapseExprB');
+        elA.textContent = textA;
+        elB.textContent = textB;
+
+        const incongruent = Math.random() < 0.7;
+        if (incongruent && state.synapse.valA !== state.synapse.valB) {
+          if (state.synapse.valA < state.synapse.valB) {
+            elA.className = 'font-black text-4xl sm:text-5xl text-cyan-300 ltr-num';
+            elB.className = 'font-bold text-xl sm:text-2xl text-amber-200 ltr-num';
+          } else {
+            elA.className = 'font-bold text-xl sm:text-2xl text-amber-200 ltr-num';
+            elB.className = 'font-black text-4xl sm:text-5xl text-cyan-300 ltr-num';
+          }
+        } else {
+          elA.className = 'font-black text-3xl sm:text-4xl text-white ltr-num';
+          elB.className = 'font-black text-3xl sm:text-4xl text-white ltr-num';
+        }
+
+        state.synapse.trialStart = performance.now();
+        state.synapse.active = true;
+      }
+
+      function evaluateSynapseChoice(choice) {
+        if (!state.synapse.active) return;
+        const rt = Math.round(performance.now() - state.synapse.trialStart);
+        let correct = false;
+        if (choice === 'A' && state.synapse.valA > state.synapse.valB) correct = true;
+        if (choice === 'B' && state.synapse.valB > state.synapse.valA) correct = true;
+        if (choice === 'EQ' && state.synapse.valA === state.synapse.valB) correct = true;
+
+        document.getElementById('synapseTimerBadge').textContent = `RT: ${rt} ms`;
+
+        if (correct) {
+          state.synapse.streak++;
+          const bonus = Math.max(15, 45 - Math.floor(rt / 60));
+          state.synapse.score += bonus;
+          state.totalXP += bonus;
+          state.bestScores.synapse = Math.max(state.bestScores.synapse, state.synapse.score);
+          state.reactionTimes.push(Math.min(1200, Math.max(240, rt)));
+          state.metrics.speed = Math.min(100, state.metrics.speed + 3);
+          playSuccessChord();
+          document.getElementById('synapseStatusBanner').innerHTML = `⚡ <strong>واکنش سیناپسی عالی در ${rt} میلی‌ثانیه!</strong> (${state.synapse.valA} در برابر ${state.synapse.valB}) — دریافت <strong>+${bonus} XP</strong>`;
+          logNeuroEvent('hIPS', `واکنش استروپ جبری در ${rt}ms ثبت شد (+${bonus} XP).`, 'text-emerald-400');
+        } else {
+          state.synapse.streak = 0;
+          playErrorTone();
+          document.getElementById('synapseStatusBanner').innerHTML = `⚠️ <strong>تداخل استروپ!</strong> مقدار گزاره الف <strong>${state.synapse.valA}</strong> و گزاره ب <strong>${state.synapse.valB}</strong> بود. فریب اندازه ظاهری فونت را نخورید!`;
+          logNeuroEvent('ACC', `تداخل استروپ رخ داد (${state.synapse.valA} در برابر ${state.synapse.valB}).`, 'text-rose-300');
+        }
+
+        document.getElementById('synapseStreakBadge').textContent = `زنجیره: ${state.synapse.streak} 🔥`;
+        const avg = Math.round(state.reactionTimes.reduce((a, b) => a + b, 0) / state.reactionTimes.length);
+        document.getElementById('synapseAvgRT').textContent = `${avg} ms`;
+        updateTelemetryUI();
+        setTimeout(generateSynapseRound, 520);
+      }
+
+      document.getElementById('btnSynapseRight').addEventListener('click', () => evaluateSynapseChoice('A'));
+      document.getElementById('btnSynapseLeft').addEventListener('click', () => evaluateSynapseChoice('B'));
+      document.getElementById('btnSynapseEqual').addEventListener('click', () => evaluateSynapseChoice('EQ'));
+      document.getElementById('btnSynapseNewWave').addEventListener('click', generateSynapseRound);
+
+      // =========================================================================
+      // GAME 4: FRACTAL & TOPOLOGICAL MATRIX SOLVER
+      // =========================================================================
+      const fractalPuzzles = [
+        {
+          title: 'قانون ۱: تصاعد حسابی تعداد اضلاع در سطر و چرخش فاز ۴۵ درجه‌ای در ستون',
+          cells: [
+            { sides: 3, dots: 1, rot: 0 },   { sides: 4, dots: 2, rot: 0 },   { sides: 5, dots: 3, rot: 0 },
+            { sides: 4, dots: 2, rot: 45 },  { sides: 5, dots: 3, rot: 45 },  { sides: 6, dots: 4, rot: 45 },
+            { sides: 5, dots: 3, rot: 90 },  { sides: 6, dots: 4, rot: 90 },  null
+          ],
+          options: [
+            { sides: 7, dots: 5, rot: 90 },
+            { sides: 6, dots: 5, rot: 45 },
+            { sides: 8, dots: 4, rot: 90 },
+            { sides: 7, dots: 3, rot: 0 }
+          ],
+          correct: 0,
+          proof: 'اثبات ریاضی: در هر سطر از چپ به راست، تعداد اضلاع چندضلعی (n) و تعداد نقاط مرکزی یک واحد افزایش می‌یابد: در سطر سوم داریم (5,3) → (6,4) → (7,5) با زاویه چرخش 90 درجه.'
+        },
+        {
+          title: 'قانون ۲: جمع برداری رئوس (n₁ + n₂ - 1) و تناوب نقاط درونی',
+          cells: [
+            { sides: 3, dots: 1, rot: 0 },   { sides: 3, dots: 2, rot: 30 },  { sides: 5, dots: 3, rot: 60 },
+            { sides: 4, dots: 2, rot: 0 },   { sides: 3, dots: 1, rot: 30 },  { sides: 6, dots: 3, rot: 60 },
+            { sides: 5, dots: 1, rot: 0 },   { sides: 4, dots: 3, rot: 30 },  null
+          ],
+          options: [
+            { sides: 8, dots: 4, rot: 60 },
+            { sides: 7, dots: 4, rot: 60 },
+            { sides: 8, dots: 2, rot: 30 },
+            { sides: 6, dots: 3, rot: 60 }
+          ],
+          correct: 0,
+          proof: 'اثبات ریاضی: در هر سطر، تعداد اضلاع ستون سوم برابر با (n₁ + n₂ - 1) است (5 + 4 - 1 = 8 ضلعی) و تعداد نقاط برابر با مجموع نقاط دو خانه اول است (1 + 3 = 4 نقطه).'
+        },
+        {
+          title: 'قانون ۳: تقارن قطری (ماتریس متقارن ترانهاده A = Aᵀ)',
+          cells: [
+            { sides: 3, dots: 1, rot: 0 },   { sides: 5, dots: 2, rot: 45 },  { sides: 7, dots: 3, rot: 90 },
+            { sides: 5, dots: 2, rot: 45 },  { sides: 4, dots: 4, rot: 0 },   { sides: 6, dots: 1, rot: 45 },
+            { sides: 7, dots: 3, rot: 90 },  { sides: 6, dots: 1, rot: 45 },  null
+          ],
+          options: [
+            { sides: 5, dots: 5, rot: 0 },
+            { sides: 8, dots: 2, rot: 90 },
+            { sides: 6, dots: 4, rot: 45 },
+            { sides: 4, dots: 3, rot: 0 }
+          ],
+          correct: 0,
+          proof: 'اثبات ریاضی: این ماتریس متقارن است (Aᵢⱼ = Aⱼᵢ) و روی قطر اصلی (i = j)، عناصر دارای اضلاع (3, 4, 5) و نقاط (1, 4, 5) با زاویه صفر درجه هستند.'
+        }
+      ];
+
+      function createPolygonSvg(cellData) {
+        if (!cellData) {
+          return `<svg viewBox="0 0 100 100" class="w-full h-full"><circle cx="50" cy="50" r="34" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-dasharray="5,5"/><text x="50" y="58" text-anchor="middle" fill="#FBBF24" font-size="28" font-weight="bold">؟</text></svg>`;
+        }
+        const { sides, dots, rot } = cellData;
+        const r = 34;
+        const pts = [];
+        for (let i = 0; i < sides; i++) {
+          const angle = ((i * 360) / sides - 90 + rot) * (Math.PI / 180);
+          const x = 50 + r * Math.cos(angle);
+          const y = 50 + r * Math.sin(angle);
+          pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+        }
+
+        const innerPts = [];
+        for (let i = 0; i < sides; i++) {
+          const angle = ((i * 360) / sides - 90 + rot + 180 / sides) * (Math.PI / 180);
+          const x = 50 + (r * 0.52) * Math.cos(angle);
+          const y = 50 + (r * 0.52) * Math.sin(angle);
+          innerPts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+        }
+
+        let dotsSvg = '';
+        for (let d = 0; d < dots; d++) {
+          const a = ((d * 360) / dots) * (Math.PI / 180);
+          const dist = dots === 1 ? 0 : 10;
+          const dx = 50 + dist * Math.cos(a);
+          const dy = 50 + dist * Math.sin(a);
+          dotsSvg += `<circle cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="3.2" fill="#FDE68A" />`;
+        }
+
+        return `
+          <svg viewBox="0 0 100 100" class="w-full h-full">
+            <polygon points="${pts.join(' ')}" fill="rgba(6, 182, 212, 0.18)" stroke="#38BDF8" stroke-width="2.5" />
+            <polygon points="${innerPts.join(' ')}" fill="rgba(139, 92, 246, 0.18)" stroke="#A78BFA" stroke-width="1.5" />
+            ${dotsSvg}
+            <text x="86" y="92" text-anchor="end" fill="#94A3B8" font-size="10" font-family="monospace">${sides}n</text>
+          </svg>
+        `;
+      }
+
+      function renderFractalPuzzle() {
+        const p = fractalPuzzles[state.fractal.puzzleIdx % fractalPuzzles.length];
+        state.fractal.answered = false;
+        document.getElementById('fractalPuzzleIndexBadge').textContent = `معمای ${(state.fractal.puzzleIdx % fractalPuzzles.length) + 1} از ${fractalPuzzles.length}`;
+        document.getElementById('fractalPromptBox').innerHTML = `<strong>${p.title}</strong> — الگوی ماتریس ۳×۳ را تحلیل کرده و خانه نهم (؟) را انتخاب کنید.`;
+        document.getElementById('fractalExplanationBox').classList.add('hidden');
+
+        const grid = document.getElementById('fractalMatrixGrid');
+        grid.innerHTML = '';
+        p.cells.forEach(cell => {
+          const div = document.createElement('div');
+          div.className = 'bg-slate-900/90 border border-slate-800 rounded-2xl p-1.5 flex items-center justify-center aspect-square';
+          div.innerHTML = createPolygonSvg(cell);
+          grid.appendChild(div);
+        });
+
+        const optGrid = document.getElementById('fractalOptionsGrid');
+        optGrid.innerHTML = '';
+        p.options.forEach((opt, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'bg-slate-950 hover:bg-slate-900 border-2 border-slate-800 hover:border-amber-400 rounded-2xl p-2 flex flex-col items-center transition';
+          btn.innerHTML = `
+            <span class="text-[11px] text-slate-400 self-start">گزینه ${idx + 1}</span>
+            <div class="w-20 h-20">${createPolygonSvg(opt)}</div>
+          `;
+          btn.addEventListener('click', () => handleFractalOptionClick(idx, btn, p));
+          optGrid.appendChild(btn);
+        });
+      }
+
+      function handleFractalOptionClick(idx, btnEl, puzzle) {
+        if (state.fractal.answered) return;
+        state.fractal.answered = true;
+        const expBox = document.getElementById('fractalExplanationBox');
+        expBox.classList.remove('hidden');
+
+        if (idx === puzzle.correct) {
+          btnEl.className = 'bg-emerald-500/25 border-2 border-emerald-400 rounded-2xl p-2 flex flex-col items-center transition';
+          state.fractal.score += 50;
+          state.totalXP += 50;
+          state.bestScores.fractal = Math.max(state.bestScores.fractal, state.fractal.score);
+          state.metrics.logic = Math.min(100, state.metrics.logic + 4.5);
+          playSuccessChord();
+          expBox.innerHTML = `✅ <strong>استنتاج توپولوژیک صحیح (+50 XP)!</strong><br>${puzzle.proof}`;
+          logNeuroEvent('BA10', 'کشف رابطه ماتریس توپولوژیک با موفقیت انجام شد (+50 XP).', 'text-amber-300');
+          showToast('استنتاج فرکتالی عالی! +50 XP', '🌀');
+        } else {
+          btnEl.className = 'bg-rose-500/25 border-2 border-rose-400 rounded-2xl p-2 flex flex-col items-center transition';
+          playErrorTone();
+          expBox.innerHTML = `💡 <strong>پاسخ صحیح گزینه ${puzzle.correct + 1} بود.</strong><br>${puzzle.proof}`;
+          logNeuroEvent('BA10', 'بازبینی قاعده ماتریس توپولوژیک در قطب پیشانی.', 'text-rose-300');
+        }
+        updateTelemetryUI();
+      }
+
+      document.getElementById('btnNextFractalPuzzle').addEventListener('click', () => {
+        state.fractal.puzzleIdx++;
+        renderFractalPuzzle();
+      });
+
+      // =========================================================================
+      // TAB 2: BRAIN ATLAS & LIVE EEG OSCILLOSCOPE
+      // =========================================================================
+      const atlasDatabase = {
+        dlpfc: {
+          tag: 'Brodmann Areas 9 & 46 — لوب پیشانی',
+          title: 'قشر پیش‌پیشانی پشتی‌جانبی (DLPFC)',
+          body: 'این ناحیه به عنوان «تخته سیاه ذهنی» (Mental Sketchpad) عمل می‌کند. وقتی در معادله‌ای چندمجهولی مقادیر میانی را نگه می‌دارید یا در بازی ماتریس خوارزمی اعداد را به ترتیب صعودی مرتب می‌کنید، مدارهای دوپامینرژیک DLPFC با فرکانس گاما شلیک می‌کنند.',
+          mathRole: 'حل معادلات چندمرحله‌ای، اثبات‌های استقرایی، محاسبه ذهنی و نگه‌داری ماتریس‌ها در حافظه فعال.',
+          gameLink: 'بازی ۱: ماتریس حافظه خوارزمی و دنباله جبری 2-Back'
+        },
+        ips: {
+          tag: 'Horizontal Intraparietal Sulcus — لوب آهیانه‌ای',
+          title: 'شیار درون‌آهیانه‌ای و قشر آهیانه‌ای فوقانی (IPS / SPL)',
+          body: 'مهم‌ترین مرکز تخصصی مغز برای درک کمیت، حس عددی (Number Sense) و تجسم خط اعداد ذهنی است. همچنین بخش فوقانی آن مسئول چرخش ذهنی اشکال هندسی سه‌بعدی در فضا است.',
+          mathRole: 'تخمین سریع مقادیر، مقایسه کسرها و توان‌ها، هندسه فضایی و تبدیل‌های دوران.',
+          gameLink: 'بازی ۲ (چرخش فضایی سه‌بعدی) و بازی ۳ (سیناپس سرعت)'
+        },
+        ba10: {
+          tag: 'Brodmann Area 10 — قطب پیشانی',
+          title: 'قشر قطب پیشانی (Rostrolateral PFC)',
+          body: 'پیشرفته‌ترین بخش تکاملی قشر مغز انسان که وظیفه «یکپارچه‌سازی رابطه‌ای» (Relational Integration) و تفکر انتزاعی مرتبه بالا را بر عهده دارد.',
+          mathRole: 'کشف الگوهای پنهان در دنباله‌ها، ماتریس‌های پیشرونده، توپولوژی و حل مسائل خلاقانه المپیاد.',
+          gameLink: 'بازی ۴: رمزگشایی ماتریس‌های فرکتالی و توپولوژیک'
+        },
+        angular: {
+          tag: 'Brodmann Area 39 — شکنج زاویه‌ای',
+          title: 'شکنج زاویه‌ای (Angular Gyrus)',
+          body: 'پل ارتباطی بین مراکز زبانی و مراکز عددی مغز است. هر زمان که فرمول‌های ریاضی، جدول ضرب یا اتحادهای جبری را به صورت خودکار از حافظه فراخوانی می‌کنید، این ناحیه روشن می‌شود.',
+          mathRole: 'بازیابی سریع حقایق حسابی، اتحادهای جبری و ترجمه نمادهای ریاضی به مفاهیم کلامی.',
+          gameLink: 'ترکیب عبارات جبری در بازی‌های ۱ و ۳'
+        },
+        acc: {
+          tag: 'Brodmann Areas 24 & 32 — قشر کمربندی قدامی',
+          title: 'قشر کمربندی قدامی (Anterior Cingulate Cortex)',
+          body: 'رادار تشخیص خطا و حل تعارض شناختی در مغز است. وقتی اندازه ظاهری یک عدد کوچک‌تر، بزرگ‌تر چاپ شده باشد (اثر استروپ)، ACC وارد عمل شده و از پاسخ شتاب‌زده و اشتباه جلوگیری می‌کند.',
+          mathRole: 'جلوگیری از خطاهای محاسباتی، دقت در علامت‌های منفی/مثبت و تمرکز عمیق.',
+          gameLink: 'بازی ۳: سیناپس سرعت و استروپ جبری'
+        },
+        hippocampus: {
+          tag: 'Medial Temporal Lobe — دستگاه لیمبیک',
+          title: 'هیپوکامپ (Hippocampus)',
+          body: 'مرکز تثبیت حافظه کوتاه‌مدت به حافظه بلندمدت و دارای سلول‌های شبکه (Grid Cells) است که فضای اقلیدسی دوبعدی و سه‌بعدی را با الگوهای شش‌ضلعی کدگذاری می‌کنند.',
+          mathRole: 'تثبیت قضایا و فرمول‌های ریاضی در حافظه بلندمدت و نقشه‌برداری هندسی فضا.',
+          gameLink: 'تثبیت یادگیری در تمام ۴ بازی و بخش اثبات هندسی خوارزمی'
+        }
+      };
+
+      function selectBrainRegion(regionKey) {
+        const d = atlasDatabase[regionKey];
+        if (!d) return;
+        document.getElementById('atlasDetailTag').textContent = d.tag;
+        document.getElementById('atlasDetailTitle').textContent = d.title;
+        document.getElementById('atlasDetailBody').textContent = d.body;
+        document.getElementById('atlasDetailMathRole').textContent = d.mathRole;
+        document.getElementById('atlasDetailGameLink').textContent = d.gameLink;
+        playSynthTone(620, 90, 'sine', 0.06);
+      }
+
+      document.querySelectorAll('#atlasBrainSvg .brain-region-path').forEach(p => {
+        p.addEventListener('click', () => selectBrainRegion(p.getAttribute('data-region')));
+      });
+      document.querySelectorAll('.region-pill-btn').forEach(b => {
+        b.addEventListener('click', () => selectBrainRegion(b.getAttribute('data-region-btn')));
+      });
+
+      const eegConfigs = {
+        theta: { freq: 6, amp: 34, label: 'Theta (6 Hz)', color: '#38BDF8', desc: 'موج تتا (۴ تا ۸ هرتز): حالت شهود خلاقانه، تصویرسازی ذهنی عمیق و ایده‌پردازی اولیه ریاضی.' },
+        alpha: { freq: 10, amp: 28, label: 'Alpha (10 Hz)', color: '#10B981', desc: 'موج آلفا (۸ تا ۱۲ هرتز): آرامش هشیارانه، کاهش استرس امتحان و آمادگی بهینه برای یادگیری.' },
+        beta: { freq: 22, amp: 20, label: 'Beta (22 Hz)', color: '#F59E0B', desc: 'موج بتا (۱۳ تا ۳۰ هرتز): تفکر منطقی متمرکز، انجام محاسبات جبری گام‌به‌گام و تحلیل داده.' },
+        gamma: { freq: 40, amp: 15, label: 'Gamma (40 Hz)', color: '#A78BFA', desc: 'موج گاما (۳۰ تا ۴۵ هرتز): بالاترین سطح همگام‌سازی سیناپسی هنگام حل مسائل پیچیده و کشف ناگهانی الگو.' }
+      };
+
+      document.querySelectorAll('.eeg-band-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const band = btn.getAttribute('data-eeg');
+          state.eegBand = band;
+          const cfg = eegConfigs[band];
+          document.getElementById('eegCurrentBandBadge').textContent = cfg.label;
+          document.getElementById('eegBandDescription').innerHTML = `<strong>${cfg.label}:</strong> ${cfg.desc}`;
+          playSynthTone(220 + cfg.freq * 8, 120, 'sine', 0.06);
+        });
+      });
+
+      // =========================================================================
+      // TAB 3: CHART.JS RADAR & REACTION TELEMETRY
+      // =========================================================================
+      let radarChartInstance = null;
+      let historyChartInstance = null;
+
+      function initCharts() {
+        if (typeof Chart === 'undefined') return;
+        const radarCtx = document.getElementById('neuroRadarChart');
+        const historyCtx = document.getElementById('neuroHistoryChart');
+        if (!radarCtx || !historyCtx) return;
+
+        radarChartInstance = new Chart(radarCtx, {
+          type: 'radar',
+          data: {
+            labels: [
+              'حافظه فعال (DLPFC)',
+              'استدلال فضایی (SPL)',
+              'سرعت سیناپسی (IPS)',
+              'کشف الگو (BA10)',
+              'کنترل توجه (ACC)'
+            ],
+            datasets: [
+              {
+                label: 'پروفایل فعلی شما',
+                data: [state.metrics.wm, state.metrics.spatial, state.metrics.speed, state.metrics.logic, state.metrics.attention],
+                backgroundColor: 'rgba(6, 182, 212, 0.25)',
+                borderColor: '#06B6D4',
+                pointBackgroundColor: '#22D3EE',
+                borderWidth: 2.5
+              },
+              {
+                label: 'میانگین پایه استاندارد',
+                data: [65, 62, 68, 64, 66],
+                backgroundColor: 'rgba(139, 92, 246, 0.12)',
+                borderColor: 'rgba(167, 139, 250, 0.6)',
+                borderDash: [4, 4],
+                borderWidth: 1.5
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              r: {
+                min: 0,
+                max: 100,
+                angleLines: { color: 'rgba(148, 163, 184, 0.2)' },
+                grid: { color: 'rgba(148, 163, 184, 0.2)' },
+                pointLabels: { color: '#E2E8F0', font: { family: 'Vazirmatn', size: 11, weight: 'bold' } },
+                ticks: { display: false }
+              }
+            },
+            plugins: {
+              legend: { labels: { color: '#CBD5E1', font: { family: 'Vazirmatn', size: 11 } } }
+            }
+          }
+        });
+
+        historyChartInstance = new Chart(historyCtx, {
+          type: 'line',
+          data: {
+            labels: state.reactionTimes.map((_, i) => `گام ${i + 1}`),
+            datasets: [{
+              label: 'زمان واکنش سیناپسی (ms - کمتر بهتر است)',
+              data: state.reactionTimes,
+              borderColor: '#10B981',
+              backgroundColor: 'rgba(16, 185, 129, 0.18)',
+              fill: true,
+              tension: 0.35,
+              pointRadius: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { ticks: { color: '#94A3B8', font: { family: 'Vazirmatn' } }, grid: { color: 'rgba(148,163,184,0.1)' } },
+              y: { ticks: { color: '#94A3B8' }, grid: { color: 'rgba(148,163,184,0.1)' } }
+            },
+            plugins: {
+              legend: { labels: { color: '#CBD5E1', font: { family: 'Vazirmatn', size: 11 } } }
+            }
+          }
+        });
+      }
+
+      function updateCharts() {
+        if (!radarChartInstance || !historyChartInstance) return;
+        radarChartInstance.data.datasets[0].data = [
+          state.metrics.wm,
+          state.metrics.spatial,
+          state.metrics.speed,
+          state.metrics.logic,
+          state.metrics.attention
+        ];
+        radarChartInstance.update();
+
+        const recentRT = state.reactionTimes.slice(-10);
+        historyChartInstance.data.labels = recentRT.map((_, i) => `تلاش ${i + 1}`);
+        historyChartInstance.data.datasets[0].data = recentRT;
+        historyChartInstance.update();
+      }
+
+      // =========================================================================
+      // TAB 4: AL-KHWARIZMI GEOMETRIC COMPLETING THE SQUARE
+      // =========================================================================
+      function drawKhwarizmiProof() {
+        const canvas = document.getElementById('khwarizmiCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const x = parseInt(document.getElementById('sliderKhwarizmiX').value, 10);
+        const b = parseInt(document.getElementById('sliderKhwarizmiB').value, 10);
+        const halfB = b / 2;
+        const c = x * x + b * x;
+        const totalSq = (x + halfB) * (x + halfB);
+
+        document.getElementById('khwarizmiXVal').textContent = `x = ${x}`;
+        document.getElementById('khwarizmiBVal').textContent = `b = ${b} (b/2 = ${halfB})`;
+        document.getElementById('khwarizmiEquationReadout').textContent =
+          `x² + ${b}x = ${c}   ⇒   (x + ${halfB})² = ${c} + ${halfB * halfB} = ${totalSq}   ⇒   x + ${halfB} = ${x + halfB}   ⇒   x = ${x}`;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const totalUnits = x + halfB;
+        const maxPx = 205;
+        const scale = maxPx / totalUnits;
+        const startX = (canvas.width - maxPx) / 2;
+        const startY = 32;
+
+        const xPx = x * scale;
+        const hbPx = halfB * scale;
+
+        ctx.fillStyle = 'rgba(6, 182, 212, 0.35)';
+        ctx.strokeStyle = '#22D3EE';
+        ctx.lineWidth = 2;
+        ctx.fillRect(startX, startY, xPx, xPx);
+        ctx.strokeRect(startX, startY, xPx, xPx);
+        ctx.fillStyle = '#F8FAFC';
+        ctx.font = 'bold 14px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`x² = ${x * x}`, startX + xPx / 2, startY + xPx / 2 + 5);
+
+        ctx.fillStyle = 'rgba(245, 158, 11, 0.35)';
+        ctx.strokeStyle = '#FBBF24';
+        ctx.fillRect(startX + xPx, startY, hbPx, xPx);
+        ctx.strokeRect(startX + xPx, startY, hbPx, xPx);
+        ctx.fillStyle = '#FEF3C7';
+        ctx.font = 'bold 11px Inter, sans-serif';
+        ctx.fillText(`${halfB}x=${halfB * x}`, startX + xPx + hbPx / 2, startY + xPx / 2 + 4);
+
+        ctx.fillStyle = 'rgba(245, 158, 11, 0.35)';
+        ctx.strokeStyle = '#FBBF24';
+        ctx.fillRect(startX, startY + xPx, xPx, hbPx);
+        ctx.strokeRect(startX, startY + xPx, xPx, hbPx);
+        ctx.fillStyle = '#FEF3C7';
+        ctx.font = 'bold 11px Inter, sans-serif';
+        ctx.fillText(`${halfB}x = ${halfB * x}`, startX + xPx / 2, startY + xPx + hbPx / 2 + 4);
+
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.35)';
+        ctx.strokeStyle = '#34D399';
+        ctx.setLineDash([4, 3]);
+        ctx.fillRect(startX + xPx, startY + xPx, hbPx, hbPx);
+        ctx.strokeRect(startX + xPx, startY + xPx, hbPx, hbPx);
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#D1FAE5';
+        ctx.font = 'bold 11px Inter, sans-serif';
+        ctx.fillText(`(b/2)²=${halfB * halfB}`, startX + xPx + hbPx / 2, startY + xPx + hbPx / 2 + 4);
+
+        ctx.fillStyle = '#94A3B8';
+        ctx.font = '12px Inter, sans-serif';
+        ctx.fillText(`x = ${x}`, startX + xPx / 2, startY - 8);
+        ctx.fillText(`b/2 = ${halfB}`, startX + xPx + hbPx / 2, startY - 8);
+      }
+
+      document.getElementById('sliderKhwarizmiX').addEventListener('input', drawKhwarizmiProof);
+      document.getElementById('sliderKhwarizmiB').addEventListener('input', drawKhwarizmiProof);
+
+      // =========================================================================
+      // DEMO JUDGE DATA LOADER & STANDALONE HTML DOWNLOADER
+      // =========================================================================
+      function loadJudgeDemoData() {
+        state.totalXP = 1480;
+        state.metrics = {
+          wm: 94,
+          spatial: 91,
+          speed: 93,
+          logic: 96,
+          attention: 92
+        };
+        state.bestScores = {
+          memory: 420,
+          spatial: 360,
+          synapse: 390,
+          fractal: 310
+        };
+        state.reactionTimes = [640, 580, 530, 490, 465, 440, 415, 395];
+        updateTelemetryUI();
+        playSuccessChord();
+        logNeuroEvent('JUDGE-DEMO', 'داده‌های نمونه آزمایشی با موفقیت بارگذاری شد.', 'text-amber-300');
+        showToast('داده‌های کامل آزمایشی بارگذاری شد! کارنامه راداری آماده مشاهده است.', '🏆');
+        switchTab('analytics');
+      }
+
+      document.getElementById('btnHeroLoadDemo').addEventListener('click', loadJudgeDemoData);
+      document.getElementById('btnPopulateDemoAnalytics').addEventListener('click', loadJudgeDemoData);
+      document.getElementById('btnHeroStartGame').addEventListener('click', () => {
+        switchTab('arena');
+        startMemoryRound();
+      });
+
+      document.getElementById('btnPrintCertificate').addEventListener('click', () => {
+        window.print();
+      });
+
+      document.getElementById('btnDownloadStandaloneHtml').addEventListener('click', () => {
+        const fullHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'index.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('فایل index.html دانلود شد! آماده آپلود در گیت‌هاب.', '🚀');
+      });
+
+      function toggleAudioState() {
+        state.soundEnabled = !state.soundEnabled;
+        document.getElementById('audioIcon').textContent = state.soundEnabled ? '🔊' : '🔇';
+        document.getElementById('audioLabel').textContent = state.soundEnabled ? 'افکت صوتی: فعال' : 'افکت صوتی: خاموش';
+        document.getElementById('btnAudioToggleMobile').textContent = state.soundEnabled ? '🔊' : '🔇';
+        if (state.soundEnabled) playSynthTone(523.25, 100);
+      }
+
+      document.getElementById('btnAudioToggle').addEventListener('click', toggleAudioState);
+      document.getElementById('btnAudioToggleMobile').addEventListener('click', toggleAudioState);
+      document.getElementById('btnBinauralWave').addEventListener('click', toggleBinauralFocusWave);
+
+      const judgeModal = document.getElementById('judgeModal');
+      document.getElementById('btnOpenJudgeModal').addEventListener('click', () => {
+        judgeModal.classList.remove('hidden');
+        judgeModal.classList.add('flex');
+      });
+      document.getElementById('btnCloseJudgeModal').addEventListener('click', () => {
+        judgeModal.classList.add('hidden');
+        judgeModal.classList.remove('flex');
+      });
+      document.getElementById('btnModalLoadDemo').addEventListener('click', () => {
+        judgeModal.classList.add('hidden');
+        judgeModal.classList.remove('flex');
+        loadJudgeDemoData();
+      });
+      document.getElementById('btnModalStartPlaying').addEventListener('click', () => {
+        judgeModal.classList.add('hidden');
+        judgeModal.classList.remove('flex');
+        switchTab('arena');
+        startMemoryRound();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (state.activeTab === 'arena' && state.activeGame === 'synapse') {
+          if (e.key === 'ArrowRight') evaluateSynapseChoice('A');
+          else if (e.key === 'ArrowLeft') evaluateSynapseChoice('B');
+          else if (e.key === 'ArrowUp' || e.key === ' ') {
+            e.preventDefault();
+            evaluateSynapseChoice('EQ');
+          }
+        }
+      });
+
+      // =========================================================================
+      // BACKGROUND NEURAL NETWORK & ANIMATION LOOPS
+      // =========================================================================
+      const bgCanvas = document.getElementById('bgNeuralCanvas');
+      const bgCtx = bgCanvas.getContext('2d');
+      const nodes = [];
+
+      function resizeBgCanvas() {
+        bgCanvas.width = window.innerWidth;
+        bgCanvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resizeBgCanvas);
+      resizeBgCanvas();
+
+      for (let i = 0; i < 38; i++) {
+        nodes.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          vx: (Math.random() - 0.5) * 0.45,
+          vy: (Math.random() - 0.5) * 0.45,
+          r: 1.5 + Math.random() * 2
+        });
+      }
+
+      function animateMasterLoop() {
+        bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+        for (let i = 0; i < nodes.length; i++) {
+          const n = nodes[i];
+          n.x += n.vx;
+          n.y += n.vy;
+          if (n.x < 0 || n.x > bgCanvas.width) n.vx *= -1;
+          if (n.y < 0 || n.y > bgCanvas.height) n.vy *= -1;
+
+          bgCtx.beginPath();
+          bgCtx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+          bgCtx.fillStyle = '#38BDF8';
+          bgCtx.fill();
+
+          for (let j = i + 1; j < nodes.length; j++) {
+            const m = nodes[j];
+            const dist = Math.hypot(n.x - m.x, n.y - m.y);
+            if (dist < 145) {
+              bgCtx.beginPath();
+              bgCtx.moveTo(n.x, n.y);
+              bgCtx.lineTo(m.x, m.y);
+              bgCtx.strokeStyle = `rgba(56, 189, 248, ${0.18 * (1 - dist / 145)})`;
+              bgCtx.lineWidth = 1;
+              bgCtx.stroke();
+            }
+          }
+        }
+
+        if (state.activeTab === 'arena' && state.activeGame === 'spatial' && state.spatial.autoRotate && !state.spatial.isDragging) {
+          state.spatial.rotY += 0.012;
+          state.spatial.rotX += 0.005;
+          drawVoxelStructureOnCanvas(
+            'spatialTargetCanvas',
+            state.spatial.targetVoxels,
+            state.spatial.rotX,
+            state.spatial.rotY,
+            state.spatial.rotZ,
+            26,
+            'violet'
+          );
+          const deg = (r) => Math.round(((r * 180) / Math.PI) % 360);
+          document.getElementById('spatialAngleReadout').textContent =
+            `θ = (${deg(state.spatial.rotX)}°, ${deg(state.spatial.rotY)}°, ${deg(state.spatial.rotZ)}°)`;
+        }
+
+        if (state.activeTab === 'atlas') {
+          const eegCanvas = document.getElementById('eegWaveCanvas');
+          if (eegCanvas) {
+            const ectx = eegCanvas.getContext('2d');
+            const w = eegCanvas.width;
+            const h = eegCanvas.height;
+            ectx.clearRect(0, 0, w, h);
+
+            ectx.strokeStyle = 'rgba(148, 163, 184, 0.12)';
+            ectx.beginPath();
+            ectx.moveTo(0, h / 2);
+            ectx.lineTo(w, h / 2);
+            ectx.stroke();
+
+            const cfg = eegConfigs[state.eegBand];
+            state.eegPhase += 0.09;
+            ectx.beginPath();
+            for (let x = 0; x < w; x++) {
+              const t = x / w;
+              const y = h / 2 +
+                cfg.amp * Math.sin(2 * Math.PI * cfg.freq * t + state.eegPhase) +
+                (cfg.amp * 0.35) * Math.sin(2 * Math.PI * (cfg.freq * 2.1) * t - state.eegPhase * 1.3);
+              if (x === 0) ectx.moveTo(x, y);
+              else ectx.lineTo(x, y);
+            }
+            ectx.strokeStyle = cfg.color;
+            ectx.lineWidth = 2.2;
+            ectx.stroke();
+          }
+        }
+
+        requestAnimationFrame(animateMasterLoop);
+      }
+
+      window.onload = function() {
+        buildMemoryGridUI();
+        generateSpatialPuzzle();
+        generateSynapseRound();
+        renderFractalPuzzle();
+        initCharts();
+        drawKhwarizmiProof();
+        updateTelemetryUI();
+        startMemoryRound();
+        requestAnimationFrame(animateMasterLoop);
+      };
+    })();
+  </script>
+</body>
+</html>
